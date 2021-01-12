@@ -23,24 +23,28 @@ from skimage.color import rgb2hsv
 
 # image_path = "/home/lowell/dancing-plant/DPI/selected pictures from 07-21-2020/WIN_20200721_15_34_14_Pro.jpg"
 # flow_path = "/home/lowell/dancing-plant/DPI/selected pictures from 07-21-2020/raft-flow-raw-5"
-image_path = "/home/lowell/dancing-plant/DPI/07-27-2020/military-time/Webcam Shot Date July 25 2020 Time 23.52.57.jpg"
-flow_path = "/home/lowell/dancing-plant/DPI/07-27-2020/military-time/raft-flow-raw-5"
+# image_path = "/home/lowell/dancing-plant/DPI/07-27-2020/military-time/Webcam Shot Date July 25 2020 Time 23.52.57.jpg"
+# flow_path = "/home/lowell/dancing-plant/DPI/07-27-2020/military-time/raft-flow-raw-5"
 # image_path = "/home/lowell/dancing-plant/DPI/07-31-2020-Azura/WIN_20200731_19_12_08_Pro.jpg"
 # flow_path = "/home/lowell/dancing-plant/DPI/07-31-2020-Azura/raft-flow-raw-20"
 # image_path = "/home/lowell/dancing-plant/DPI/07-15-2020/pictures/WIN_20200715_12_37_37_Pro.jpg"
 # flow_path = "/home/lowell/dancing-plant/DPI/07-15-2020/pictures/raft-flow-raw-10"
 # image_path = "/home/lowell/dancing-plant/DPI/selected from 07-22-2020/WIN_20200722_17_23_30_Pro.jpg"
 # flow_path = "/home/lowell/dancing-plant/DPI/selected from 07-22-2020/raft-flow-raw-10"
+# image_path = "/home/lowell/dancing-plant/DPI/11-01-2020_Azura/military-time/Webcam Shot Date November 2 2020 Time 07.08.02.jpg"
+# flow_path = "/home/lowell/dancing-plant/DPI/11-01-2020_Azura/military-time/raft-flow-raw-3"
+image_path = "/home/lowell/dancing-plant/DPI/11-03-2020Azura/military-time/Webcam Shot Date November 3 2020 Time 16.23.49.jpg"
+flow_path = "/home/lowell/dancing-plant/DPI/11-03-2020Azura/military-time/raft-flow-raw-5"
 
-JUST_CORNERS = True  # Will only run corner detection if true, otherwise will run tracking after corner detection
+JUST_CORNERS = False  # Will only run corner detection if true, otherwise will run tracking after corner detection
 
-NUM_TRACE = 5  # Top NUM_TRACE most mobile corner traces will be kept
+NUM_TRACE = 10  # Top NUM_TRACE most mobile corner traces will be kept
 
-CORNER_THRESH = 0.01  # R scores must be greater than this faction of the max R score
+CORNER_THRESH = 0.0005  # R scores must be greater than this faction of the max R score
 BOCK_SIZE = 2  # Size of local area used when creating R scores from gradients
 SOBEL_SIZE = 9  # Size of sobel kernel used in corner detection
 FREE_K = 0.00  # Parameter trading off between edge and corner detection (higher is stricter on corner detections, lower will allow more edges)
-NONM_SIZE = 40  # Nonmax suppress tile size
+NONM_SIZE = 80  # Nonmax suppress tile size
 NONM_NUM = 5  # Nonmax suppress topK to keep
 
 

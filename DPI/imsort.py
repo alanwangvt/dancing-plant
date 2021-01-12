@@ -20,6 +20,30 @@ def get_file_sort(args):
         print(imp)
 
 
+def index(args):
+    images = glob.glob(os.path.join(args.path, '*.png')) + \
+             glob.glob(os.path.join(args.path, '*.jpg'))
+             
+    images = sorted(images)
+    
+    out_path = os.path.join(args.path, "indexed")
+    if not os.path.exists(out_path):
+        os.mkdir(out_path)
+
+    scale = len(images)
+    zpad = 0
+    while scale >= 1:
+        scale /= 10
+        zpad += 1
+
+    for i, imp in enumerate(images):
+        ext = imp.split('.')[-1]
+        out_name = str(i).zfill(zpad) + '.' + ext
+        out_file = os.path.join(out_path, out_name)
+        print(out_file)
+        copyfile(imp, out_file)
+
+
 def revise(args):
     images = glob.glob(os.path.join(args.path, '*.png')) + \
              glob.glob(os.path.join(args.path, '*.jpg'))
@@ -56,14 +80,18 @@ def revise(args):
 
 
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('path', help="dataset for evaluation")
-    parser.add_argument("--revise", "-r", action="store_true", help="revise to sortable military time")
+    parser.add_argument("--revise", "-r", action="store_true", help="revise to sortable military time") 
+    parser.add_argument("--index", "-i", action="store_true", help="index according to current sort")
     args = parser.parse_args()
 
     if args.revise:
         revise(args)
-    else:
+
+    if args.index:
+        index(args)
+
+    if not args.revise and not args.index:
         get_file_sort(args)

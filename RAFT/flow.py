@@ -25,7 +25,11 @@ from tqdm import tqdm
 # ]
 
 collections = [("11-01-2020_Azura/military-time", 5),
-        ("11-03-2020Azura/military-time", 10)
+        ("11-03-2020Azura/military-time", 10),
+        ("11-01-2020_Azura/military-time", 3),
+        ("11-01-2020_Azura/military-time", 10),
+        ("11-03-2020Azura/military-time", 5),
+        ("11-03-2020Azura/military-time", 20),
 ]
         
 
