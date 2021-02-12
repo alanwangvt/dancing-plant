@@ -33,14 +33,23 @@ from skimage.color import rgb2hsv
 # flow_path = "/home/lowell/dancing-plant/DPI/selected from 07-22-2020/raft-flow-raw-10"
 # image_path = "/home/lowell/dancing-plant/DPI/11-01-2020_Azura/military-time/Webcam Shot Date November 2 2020 Time 07.08.02.jpg"
 # flow_path = "/home/lowell/dancing-plant/DPI/11-01-2020_Azura/military-time/raft-flow-raw-3"
-image_path = "/home/lowell/dancing-plant/DPI/11-03-2020Azura/military-time/Webcam Shot Date November 3 2020 Time 16.23.49.jpg"
-flow_path = "/home/lowell/dancing-plant/DPI/11-03-2020Azura/military-time/raft-flow-raw-5"
+# image_path = "/home/lowell/dancing-plant/DPI/11-03-2020Azura/military-time/Webcam Shot Date November 3 2020 Time 16.23.49.jpg"
+# flow_path = "/home/lowell/dancing-plant/DPI/11-03-2020Azura/military-time/raft-flow-raw-5"
+# image_path = "/mnt/slow_ssd/lowell/DPI/01-24-2021/military-time/Webcam Shot Date January 24 2021 Time 22.27.50.jpg"
+# flow_path = "/home/lowell/dancing-plant/DPI/01-24-2021/military-time/raft-flow-raw-5"
+image_path = "/home/lowell/dancing-plant/DPI/02-01-2021/military-time/Webcam Shot Date February 1 2021 Time 17.25.34.jpg"
+flow_path = "/mnt/slow_ssd/lowell/DPI/02-01-2021/military-time/raft-flow-raw-1"
+
+LOAD_STEPS = 4  # Number of process steps to break trace genration into, where only 1 / LOAD_STEPS fraction of flow images will be loaded at a time
+
+X_SPLITS = (950,)  # List of X coordinates to partition the tracks by vertically
+SHOW_PARTITION = True  # Will draw vertical lines where the tracks are partitioned
 
 JUST_CORNERS = False  # Will only run corner detection if true, otherwise will run tracking after corner detection
 
-NUM_TRACE = 10  # Top NUM_TRACE most mobile corner traces will be kept
+NUM_TRACE = 25  # Top NUM_TRACE most mobile corner traces will be kept
 
-CORNER_THRESH = 0.0005  # R scores must be greater than this faction of the max R score
+CORNER_THRESH = 0.00025  # R scores must be greater than this faction of the max R score
 BOCK_SIZE = 2  # Size of local area used when creating R scores from gradients
 SOBEL_SIZE = 9  # Size of sobel kernel used in corner detection
 FREE_K = 0.00  # Parameter trading off between edge and corner detection (higher is stricter on corner detections, lower will allow more edges)
@@ -78,9 +87,20 @@ def nonmax_suppress(corner_map, tile_size, topK):
     return result
 
 
-def extract_raw_flow(flow_dir):
-    flow_imgs = [np.load(os.path.join(flow_dir, x)) for x in natsorted(os.listdir(flow_dir))]
-    return np.stack(flow_imgs)
+def extract_raw_flow(flow_dir, chunk=None):
+    flow_files = natsorted(os.listdir(flow_dir))
+    if chunk is not None:
+        start, end = chunk
+        flow_files = flow_files[start:end]
+    flow_stack = None
+    for i, x in tqdm(enumerate(flow_files)):
+        flo = np.load(os.path.join(flow_dir, x))
+        if flow_stack is None:
+            h, w, c = flo.shape
+            b = len(flow_files) if chunk is None else (end - start)
+            flow_stack = np.zeros((b, h, w, c))
+        flow_stack[i, :, :, :] = flo
+    return flow_stack
 
 
 def get_trace(corner_idx, flow_stack):
@@ -130,14 +150,45 @@ def draw_trace(img, trace):
         for pt in tr:
             y, x = pt[0], pt[1]
             #img[y, x, :] = [255, 255, 255] #[b, g, r]
-            cv2.circle(img, (x, y), 6, (b, g, r), -1)
+            cv2.circle(img, (x, y), 3, (b, g, r), -1)
 
 
-def np_to_csv(trace):
+def np_to_csv(trace, idx=""):
     ypane = trace[:, :, 0]
     xpane = trace[:, :, 1]
-    np.savetxt("Y_trace.csv", ypane, fmt="%d", delimiter=",")
-    np.savetxt("X_trace.csv", xpane, fmt="%d", delimiter=",")
+    np.savetxt(f"Y_trace{idx}.csv", ypane, fmt="%d", delimiter=",")
+    np.savetxt(f"X_trace{idx}.csv", xpane, fmt="%d", delimiter=",")
+
+
+def draw_partitions(img):
+    color = (0, 0, 255)  # b, g, r
+    H, W = img.shape[:2]
+    tops = [(x, 0) for x in X_SPLITS]
+    bottoms = [(x, H - 1) for x in X_SPLITS]
+    for t, b in zip(tops, bottoms):
+        cv2.line(img, t, b, color, 1)
+
+
+def get_partitions(img):
+    H, W = img.shape[:2]
+    lbound = (0, *X_SPLITS)
+    rbound = (*X_SPLITS, W)
+    return [(l, r) for l, r in zip(lbound, rbound)]
+
+
+def get_process_chunks(flow_dir, load_steps):
+    """ Rounds up for last chunk if not evenly split """
+    num_flow = len(os.listdir(flow_dir))
+    step_size = int(num_flow / load_steps)
+    chunks = []
+    for i in range(load_steps):
+        chunks.append((i*step_size, (i+1)*step_size))
+    
+    last_start, last_end = chunks[-1]
+    if last_end != num_flow:
+        chunks[-1] = (last_start, num_flow)
+
+    return chunks
 
 
 if __name__ == "__main__":
@@ -146,19 +197,53 @@ if __name__ == "__main__":
 
     begin = time.time()
 
+    clean_img = img.copy()
+
     corner_idx = corner_detect(img, draw=JUST_CORNERS)
-    # draw_trace(img, np.expand_dims(corner_idx, 1))
+    last_corner_idx = corner_idx.copy()
 
     if not JUST_CORNERS:
-        flow_stack = extract_raw_flow(flow_path)
-        print(flow_stack[0].max())
-        trace = get_trace(corner_idx, flow_stack)
-        # print(trace[:, 0:2, :])
-        fast_traces = delta_sort(trace, NUM_TRACE)
-        draw_trace(img, fast_traces)
-        np_to_csv(fast_traces)
+        chunks = get_process_chunks(flow_path, LOAD_STEPS)
+        traces = []
+
+        for cstart, cend in chunks:
+            print(f"Processing chunk ({cstart}, {cend})")
+            flow_stack = extract_raw_flow(flow_path, (cstart, cend))
+            print("Max Flow =", flow_stack[0].max())
+            tr = get_trace(last_corner_idx, flow_stack)
+            last_corner_idx = tr[:, -1, :]
+            traces.append(tr)
+            flow_stack = None
+            del flow_stack
+        
+        trace = np.concatenate(traces, axis=1)
+            
+    part_imgs = []
+
+    parts = get_partitions(img)
+    for pidx, (lbound, rbound) in enumerate(parts):
+
+        if not JUST_CORNERS:
+            in_range_idx = np.logical_and(corner_idx[:, -1] >= lbound, corner_idx[:, -1] < rbound)
+            sel_traces = trace[in_range_idx, :, :]  # keep only traces with keypoint origin in current partition
+
+            fast_traces = delta_sort(sel_traces, NUM_TRACE)
+            draw_trace(img, fast_traces)
+
+            if len(parts) > 0:
+                sel_img = clean_img.copy()
+                draw_trace(sel_img, fast_traces)
+                part_imgs.append(sel_img)
+                np_to_csv(fast_traces, pidx)
+            else:
+                np_to_csv(fast_traces)
+
+        if SHOW_PARTITION:
+            draw_partitions(img)
 
     process_time = time.time() - begin
 
     print("Time elapsed:", process_time)
     cv2.imwrite("track.jpg", img)
+    for pidx, pimg in enumerate(part_imgs):
+        cv2.imwrite(f"track{pidx}.jpg", pimg)

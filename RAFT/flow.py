@@ -24,12 +24,18 @@ from tqdm import tqdm
 #         ("selected pictures from 07-21-2020", 5)
 # ]
 
-collections = [("11-01-2020_Azura/military-time", 5),
-        ("11-03-2020Azura/military-time", 10),
-        ("11-01-2020_Azura/military-time", 3),
-        ("11-01-2020_Azura/military-time", 10),
-        ("11-03-2020Azura/military-time", 5),
-        ("11-03-2020Azura/military-time", 20),
+# collections = [("11-01-2020_Azura/military-time", 5),
+#         ("11-03-2020Azura/military-time", 10),
+#         ("11-01-2020_Azura/military-time", 3),
+#         ("11-01-2020_Azura/military-time", 10),
+#         ("11-03-2020Azura/military-time", 5),
+#         ("11-03-2020Azura/military-time", 20),
+# ]
+
+# collections = [("01-24-2021/military-time", 1)
+# ]
+
+collections = [("02-01-2021/military-time", 1)
 ]
         
 
@@ -52,7 +58,8 @@ def save_flow(path, flo):
 def save_flow_raw(path, flo):
     flo = flo[0].permute(1,2,0).cpu().numpy()
 
-    prefix = ".." + ''.join(path.split('.')[:-1])
+    ### prefix = ".." + ''.join(path.split('.')[:-1])
+    prefix = ''.join(path.split('.')[:-1])
     np.save(prefix, flo)
 
     # split = path.split('.')
@@ -83,7 +90,8 @@ def demo(args):
 
         for folder, frameskip in collections:
             input_path = os.path.join(args.path, folder)
-            output_path = os.path.join(input_path, f"raft-flow-raw-{frameskip}")
+            ### output_path = os.path.join(input_path, f"raft-flow-raw-{frameskip}")
+            output_path = os.path.join("/mnt/slow_ssd/lowell/DPI/02-01-2021/military-time", f"raft-flow-raw-{frameskip}")
             
             if not os.path.exists(output_path):
                 os.mkdir(output_path)
