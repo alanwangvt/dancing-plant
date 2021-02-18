@@ -206,7 +206,7 @@ if __name__ == "__main__":
         chunks = get_process_chunks(flow_path, LOAD_STEPS)
         traces = []
 
-        for cstart, cend in chunks:
+        for cstart, cend in chunks:  ### TODO this seems to add one redundant column each time
             print(f"Processing chunk ({cstart}, {cend})")
             flow_stack = extract_raw_flow(flow_path, (cstart, cend))
             print("Max Flow =", flow_stack[0].max())
