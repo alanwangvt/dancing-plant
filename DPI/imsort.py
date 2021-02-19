@@ -1,12 +1,7 @@
-import sys
 
 import argparse
 import os
-import cv2
 import glob
-import numpy as np
-import torch
-from PIL import Image
 from shutil import copyfile
 
 
