@@ -40,7 +40,7 @@ from skimage.color import rgb2hsv
 image_path = "/home/lowell/dancing-plant/DPI/02-01-2021/military-time/Webcam Shot Date February 1 2021 Time 17.25.34.jpg"
 flow_path = "/mnt/slow_ssd/lowell/DPI/02-01-2021/military-time/raft-flow-raw-1"
 
-LOAD_STEPS = 4  # Number of process steps to break trace genration into, where only 1 / LOAD_STEPS fraction of flow images will be loaded at a time
+LOAD_STEPS = 20  # Number of process steps to break trace genration into, where only 1 / LOAD_STEPS fraction of flow images will be loaded at a time
 
 X_SPLITS = (950,)  # List of X coordinates to partition the tracks by vertically
 SHOW_PARTITION = True  # Will draw vertical lines where the tracks are partitioned
@@ -206,13 +206,14 @@ if __name__ == "__main__":
         chunks = get_process_chunks(flow_path, LOAD_STEPS)
         traces = []
 
-        for cstart, cend in chunks:  ### TODO this seems to add one redundant column each time
+        for cstart, cend in chunks:
             print(f"Processing chunk ({cstart}, {cend})")
             flow_stack = extract_raw_flow(flow_path, (cstart, cend))
-            print("Max Flow =", flow_stack[0].max())
+            # print("Max Flow =", flow_stack[0].max())
             tr = get_trace(last_corner_idx, flow_stack)
             last_corner_idx = tr[:, -1, :]
-            traces.append(tr)
+            tr_tail = tr if cstart == 0 else tr[:, 1:, :]  # removes redundant starting point after first chunk
+            traces.append(tr_tail)
             flow_stack = None
             del flow_stack
         
