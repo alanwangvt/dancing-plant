@@ -35,7 +35,13 @@ from tqdm import tqdm
 # collections = [("01-24-2021/military-time", 1)
 # ]
 
-collections = [("02-01-2021/military-time", 1)
+# collections = [("02-01-2021/military-time", 1)
+# ]
+
+collections = [
+    ("05-04-2021/indexed", 1),
+    ("05-08-2021/indexed", 1),
+    ("05-18-2021a/indexed", 1)
 ]
         
 
@@ -90,11 +96,14 @@ def demo(args):
 
         for folder, frameskip in collections:
             input_path = os.path.join(args.path, folder)
-            ### output_path = os.path.join(input_path, f"raft-flow-raw-{frameskip}")
-            output_path = os.path.join("/mnt/slow_ssd/lowell/DPI/02-01-2021/military-time", f"raft-flow-raw-{frameskip}")
+
+            if args.save_prefix is not None:
+                output_path = os.path.join(args.save_prefix, folder, f"raft-flow-raw-{frameskip}")
+            else:  # default to saving in directory off input path
+                output_path = os.path.join(input_path, f"raft-flow-raw-{frameskip}")
             
             if not os.path.exists(output_path):
-                os.mkdir(output_path)
+                os.makedirs(output_path)
             elif os.listdir(output_path):
                 print(f"Skipping {input_path}, {output_path} exists and is populated...")
                 continue
@@ -133,6 +142,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', help="restore checkpoint")
     parser.add_argument('--path', help="dataset for evaluation")
+    parser.add_argument('--save_prefix', help='path prefix of where to save flow arrays, will default to input path if not given', default=None)
     parser.add_argument('--small', action='store_true', help='use small model')
     parser.add_argument('--mixed_precision', action='store_true', help='use mixed precision')
     parser.add_argument('--alternate_corr', action='store_true', help='use efficent correlation implementation')
