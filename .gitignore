@@ -1,2 +1,3 @@
 .vscode
 raft-mp4s
+**/trace_cache

@@ -8,25 +8,26 @@ import numpy as np
 import cv2
 from tslearn.clustering import TimeSeriesKMeans
 
-from corner_track import draw_trace
+from track import draw_trace
 
 trace_path = "/home/lowell/dancing-plant/RAFT"  # assumes traces in format X_trace{i}.csv and Y_trace{i}.csv where 'i' is partition
 out_path = "/home/lowell/dancing-plant/RAFT/dtw_corr_traces"
-image_path = "/home/lowell/dancing-plant/DPI/02-01-2021/military-time/Webcam Shot Date February 1 2021 Time 17.25.34.jpg"  # for extraction display
+image_path = "/home/lowell/dancing-plant/DPI/05-04-2021/indexed/000.jpg"  # for extraction display
 
-NUM_X_SPLITS = 2
-NUM_CLUSTER = (4, 4)  # num clusters for each k-means run (one for each x split)
+NUM_PART = 2
+NUM_CLUSTER = (4, 4)  # num clusters for each k-means run (one for each partition)
+NUM_TRACE = 3  # Top NUM_TRACE most mobile corner traces will be kept for EACH cluster
 
 
 if __name__ == "__main__":
     
     # load trace
-    if NUM_X_SPLITS is None:
+    if NUM_PART is None or NUM_PART <= 1:
         x_split_paths = [osp.join(trace_path, "X_trace.csv")]
         y_split_paths = [osp.join(trace_path, "Y_trace.csv")]
     else:
-        x_split_paths = [osp.join(trace_path, f"X_trace{idx}.csv") for idx in range(NUM_X_SPLITS)]
-        y_split_paths = [osp.join(trace_path, f"Y_trace{idx}.csv") for idx in range(NUM_X_SPLITS)]
+        x_split_paths = [osp.join(trace_path, f"X_trace{idx}.csv") for idx in range(NUM_PART)]
+        y_split_paths = [osp.join(trace_path, f"Y_trace{idx}.csv") for idx in range(NUM_PART)]
 
     x_split_traces = [np.loadtxt(fname, dtype=np.uint32, delimiter=",") for fname in x_split_paths]
     y_split_traces = [np.loadtxt(fname, dtype=np.uint32, delimiter=",") for fname in y_split_paths]
@@ -58,26 +59,26 @@ if __name__ == "__main__":
         model.fit(xyt)
 
         # extract fastest moving trace for each cluster
-        extractions = np.empty_like(xyt, shape=(K, sz, d))
+        extractions = np.empty_like(xyt, shape=(K, NUM_TRACE, sz, d))
         cluster_labels = model.predict(xyt)
         xyt += offset  # fix offset
         for k in range(K):
             cluster_traces = xyt[cluster_labels == k]
-            extractions[k, :, :] = cluster_traces[0]  # take top (fastest moving) trace
+            extractions[k, :, :, :] = cluster_traces[:NUM_TRACE]  # take top NUM_TRACE fastest moving traces
+
+            # save extracted traces
+            ex_xt = extractions[k, :, :, 1]
+            ex_yt = extractions[k, :, :, 0]
+            np.savetxt(osp.join(out_path, f"Y_trace{idx}-K{k}-top{NUM_TRACE}.csv"), ex_yt, fmt="%d", delimiter=",")
+            np.savetxt(osp.join(out_path, f"X_trace{idx}-K{k}-top{NUM_TRACE}.csv"), ex_xt, fmt="%d", delimiter=",")
 
             # display full cluster
             img_k = img.copy()
             draw_trace(img_k, cluster_traces)
             cv2.imwrite(osp.join(out_path, f"track{idx}-K{k}.jpg"), img_k)
 
-        # display extracted traces
+        # display all extracted traces together
         img_e = img.copy()
+        extractions = extractions.reshape(-1, sz, d)  # flatten cluster and trace idx dims
         draw_trace(img_e, extractions)
-        cv2.imwrite(osp.join(out_path, f"track{idx}.jpg"), img_e)
-
-        # save extracted traces
-        ex_xt = extractions[:, :, 1]
-        ex_yt = extractions[:, :, 0]
-        np.savetxt(osp.join(out_path, f"Y_trace{idx}.csv"), ex_yt, fmt="%d", delimiter=",")
-        np.savetxt(osp.join(out_path, f"X_trace{idx}.csv"), ex_xt, fmt="%d", delimiter=",")
-
+        cv2.imwrite(osp.join(out_path, f"track{idx}-all-top{NUM_TRACE}-each.jpg"), img_e)
