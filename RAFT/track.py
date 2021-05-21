@@ -3,6 +3,7 @@ sys.path.append('core')
 
 import argparse
 import os
+import os.path as osp
 import cv2
 import glob
 import numpy as np
@@ -11,6 +12,7 @@ from PIL import Image
 import json
 import time
 import math
+import hashlib
 
 from raft import RAFT
 from utils import flow_viz
@@ -28,48 +30,52 @@ FLOW_PATH = "/mnt/slow_ssd/lowell/DPI/05-04-2021/indexed/raft-flow-raw-1"
 
 FLOW_CHUNK_SIZE = 30  # Max number of flow images that will be loaded and used for tracking at a time
 
-X_SPLITS = (1600,)  # List of X coordinates to partition the track anchors by horizontally
+X_SPLITS = ()  # List of X coordinates to partition the track anchors by horizontally
 Y_SPLITS = (1000,)  # List of Y coordinates to partition the track anchors by vertically
 SHOW_PARTITION = True  # Will draw vertical lines where the tracks are partitioned
 
 JUST_ANCHORS = False  # Will only run anchor generation if true, otherwise will run tracking afterwards
 
-NUM_TRACE = 250  # Top NUM_TRACE most mobile corner traces will be kept
+NUM_TRACE = 30  # Top NUM_TRACE most mobile corner traces will be kept
 
 DENSE_TRACK = True  # traces generated in regular grid intervals, otherwise use Harris corner detection params below
-GRID_SIZE = 30  # space inbetween dense trace anchors (both x and y), when DENSE_TRACK is True
+GRID_SIZE = 100  # space inbetween dense trace anchors (both x and y), when DENSE_TRACK is True
 
 CORNER_THRESH = 0.00025  # R scores must be greater than this faction of the max R score
-BOCK_SIZE = 2  # Size of local area used when creating R scores from gradients
+BLOCK_SIZE = 2  # Size of local area used when creating R scores from gradients
 SOBEL_SIZE = 9  # Size of sobel kernel used in corner detection
 FREE_K = 0.00  # Parameter trading off between edge and corner detection (higher is stricter on corner detections, lower will allow more edges)
 NONM_SIZE = 80  # Nonmax suppress tile size
 NONM_NUM = 5  # Nonmax suppress topK to keep
 
 
-def corner_detect(img, draw=False):
+def corner_detect(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = np.float32(gray)
-    dest = cv2.cornerHarris(gray, BOCK_SIZE, SOBEL_SIZE, FREE_K)
+    dest = cv2.cornerHarris(gray, BLOCK_SIZE, SOBEL_SIZE, FREE_K)
     dest = nonmax_suppress(dest, NONM_SIZE, NONM_NUM)
     corner_map = dest > CORNER_THRESH * dest.max()
-    corner_idx = np.argwhere(corner_map)
-    if draw:
-        dest = cv2.dilate(dest, None, iterations=3)
-        img[dest > CORNER_THRESH * dest.max()] = [0, 255, 0]
-    return corner_idx
+    return np.argwhere(corner_map)
 
 
-def grid_anchor(img, draw=False):
+def grid_anchor(img):
     H, W, _ = img.shape
     x_count = np.repeat(np.expand_dims(np.arange(W), axis=1), H, axis=1).T
     y_count = np.repeat(np.expand_dims(np.arange(H), axis=1), W, axis=1)
     coord_map = np.logical_and(x_count % GRID_SIZE == 0, y_count % GRID_SIZE == 0)
-    coords = np.argwhere(coord_map)
-    if draw:
-        coord_map = cv2.dilate(coord_map.astype(np.float), None, iterations=3)
-        img[coord_map > 0.] = [0, 255, 0]  # b, g, r
-    return coords
+    return np.argwhere(coord_map)
+
+
+def draw_anchors(img, anchors):
+    y_idx, x_idx = np.split(anchors, 2, axis=1)
+    ravel_idxs = np.ravel_multi_index((y_idx.squeeze(), x_idx.squeeze()), img.shape[:2])
+
+    coord_map = np.zeros(np.prod(img.shape[:2]), dtype=np.bool)  # flattened!
+    coord_map[ravel_idxs] = True
+    coord_map = coord_map.reshape(img.shape[:2])
+
+    coord_map = cv2.dilate(coord_map.astype(np.float), None, iterations=3)
+    img[coord_map > 0.] = [0, 255, 0]  # b, g, r
 
 
 def nonmax_suppress(corner_map, tile_size, topK):
@@ -96,7 +102,7 @@ def extract_raw_flow(flow_dir, chunk=None):
         flow_files = flow_files[start:end]
     flow_stack = None
     for i, x in tqdm(enumerate(flow_files)):
-        flo = np.load(os.path.join(flow_dir, x))
+        flo = np.load(osp.join(flow_dir, x))
         if flow_stack is None:
             h, w, c = flo.shape
             b = len(flow_files) if chunk is None else (end - start)
@@ -217,6 +223,53 @@ def get_process_chunks(flow_dir, flow_chunk_size):
     return chunks
 
 
+def get_working_hash():
+    """
+    Return first 8 hex chars of a hash of the image and flow paths
+    plus any relevant anchor generation parameters.
+    Alows storing a sampled trace numpy array for further
+    post-processing (e.g. find_best_traces) without constantly
+    reloading the dense flow files, which are large.
+    """
+    if DENSE_TRACK:
+        PARAM_STR = str(GRID_SIZE)
+    else:
+        PARAM_STR = str(CORNER_THRESH) + \
+            str(BLOCK_SIZE) + \
+            str(SOBEL_SIZE) + \
+            str(FREE_K) + \
+            str(NONM_SIZE) + \
+            str(NONM_NUM)
+
+    string = bytearray(IMAGE_PATH + FLOW_PATH + PARAM_STR, "utf8")
+    return hashlib.sha1(string).hexdigest()[:8]
+
+
+def working_dir():
+    wdir = osp.join(osp.dirname(__file__), "trace_cache")
+    if not osp.exists(wdir):
+        os.makedirs(wdir)
+    return wdir
+
+
+def have_working_trace(thash):
+    file_names = os.listdir(working_dir())
+    for fn in file_names:
+        if fn.startswith("trace_" + thash):
+            return True
+    return False
+
+
+def save_working_trace(thash, trace):
+    out_path = osp.join(working_dir(), "trace_" + thash + ".npy")
+    np.save(out_path, trace)
+
+
+def load_working_trace(thash):
+    in_path = osp.join(working_dir(), "trace_" + thash + ".npy")
+    return np.load(in_path)
+
+
 def trace_from_flow(flow_path, anchors):
     chunks = get_process_chunks(flow_path, FLOW_CHUNK_SIZE)
     last_track = anchors.copy()
@@ -239,11 +292,12 @@ def trace_from_flow(flow_path, anchors):
 def find_best_traces(trace, parts):
     """Based on most cumulative displacement."""
     fast_traces_list = []
+    anch = trace[:, 0, :]  # extract anchors from trace
     for pidx, part in enumerate(parts):
         lbound, rbound, tbound, bbound = part
 
-        in_range_X = np.logical_and(anchors[:, -1] >= lbound, anchors[:, -1] < rbound)
-        in_range_Y = np.logical_and(anchors[:, 0] >= tbound, anchors[:, 0] < bbound)
+        in_range_X = np.logical_and(anch[:, -1] >= lbound, anch[:, -1] < rbound)
+        in_range_Y = np.logical_and(anch[:, 0] >= tbound, anch[:, 0] < bbound)
         in_range_idx = np.logical_and(in_range_X, in_range_Y)
 
         sel_traces = trace[in_range_idx, :, :]  # keep only traces with keypoint origin in current partition
@@ -281,16 +335,29 @@ if __name__ == "__main__":
 
     begin = time.time()
 
-    anchors = corner_detect(img, draw=JUST_ANCHORS) if not DENSE_TRACK else grid_anchor(img, draw=JUST_ANCHORS)
+    thash = get_working_hash()
+    using_saved_trace = have_working_trace(thash)
+
+    if using_saved_trace:  # can load exisiting anchors and trace
+        print("Loading stored intermediate trace from trace_cache...")
+        trace = load_working_trace(thash)
+        anchors = trace[:, 0, :]
+    else:  # must generate using RAFT flow files
+        anchors = corner_detect(img) if not DENSE_TRACK else grid_anchor(img)
 
     if not JUST_ANCHORS:
-        trace = trace_from_flow(FLOW_PATH, anchors)
+        if not using_saved_trace:
+            trace = trace_from_flow(FLOW_PATH, anchors)
+            save_working_trace(thash, trace)
+
         parts = get_partitions(img)
         fast_traces_list = find_best_traces(trace, parts)
         
         part_imgs = save_traces(fast_traces_list, img)
         for pidx, pimg in enumerate(part_imgs):
             cv2.imwrite(f"track{pidx}.jpg", pimg)
+    else:
+        draw_anchors(img, anchors)
 
     if SHOW_PARTITION:
         draw_partitions(img)
