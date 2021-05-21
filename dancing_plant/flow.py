@@ -1,5 +1,3 @@
-import sys
-sys.path.append('core')
 
 import argparse
 import os
@@ -8,50 +6,23 @@ import glob
 import numpy as np
 import torch
 from PIL import Image
-
-from raft import RAFT
-from utils import flow_viz
-from utils.utils import InputPadder
-
 from tqdm import tqdm
+from attrdict import AttrDict
 
-# collections = [("07-15-2020/pictures", 10),
-#         ("07-27-2020/military-time", 5),
-#         ("07-31-2020-Azura", 20),
-#         ("selected07232020AZURA", 10),
-#         ("selected from 07-22-2020", 10),
-#         ("selected from 07-23-2020_USB", 10),
-#         ("selected pictures from 07-21-2020", 5)
-# ]
+from dancing_plant.raft.raft import RAFT
+from dancing_plant.raft.utils import flow_viz
+from dancing_plant.raft.utils.utils import InputPadder
 
-# collections = [("11-01-2020_Azura/military-time", 5),
-#         ("11-03-2020Azura/military-time", 10),
-#         ("11-01-2020_Azura/military-time", 3),
-#         ("11-01-2020_Azura/military-time", 10),
-#         ("11-03-2020Azura/military-time", 5),
-#         ("11-03-2020Azura/military-time", 20),
-# ]
 
-# collections = [("01-24-2021/military-time", 1)
-# ]
-
-# collections = [("02-01-2021/military-time", 1)
-# ]
-
-collections = [
-    ("05-04-2021/indexed", 1),
-    ("05-08-2021/indexed", 1),
+EXPERIMENTS = [
     ("05-18-2021a/indexed", 1)
 ]
-        
 
-
-DEVICE = 'cuda:1'
 
 def load_image(imfile):
     img = np.array(Image.open(imfile)).astype(np.uint8)
     img = torch.from_numpy(img).permute(2, 0, 1).float()
-    return img[None].to(DEVICE)
+    return img[None]
 
 
 def save_flow(path, flo):
@@ -64,32 +35,19 @@ def save_flow(path, flo):
 def save_flow_raw(path, flo):
     flo = flo[0].permute(1,2,0).cpu().numpy()
 
-    ### prefix = ".." + ''.join(path.split('.')[:-1])
     prefix = ''.join(path.split('.')[:-1])
     np.save(prefix, flo)
 
-    # split = path.split('.')
-    # prefix = ''.join(split[:-1])
-    # ext = split[-1]
-    # path_u = prefix + "u." + ext
-    # path_v = prefix + "v." + ext
-    # print(path_u)
-    # print(path_v)
-    # print(flo[:,:,0].shape)
-    # print(flo[:,:,0].dtype)
 
-    # cv2.imwrite(path_u, flo[:,:,0])
-    # cv2.imwrite(path_v, flo[:,:,1])
-
-
-def demo(args):
-    torch.cuda.set_device(1)
+def flow(args, collections):
+    torch.cuda.set_device(args.device)
+    device = torch.device(args.device)
 
     model = torch.nn.DataParallel(RAFT(args))
     model.load_state_dict(torch.load(args.model))
 
     model = model.module
-    model.to(DEVICE)
+    model.to(device)
     model.eval()
 
     with torch.no_grad():
@@ -108,7 +66,7 @@ def demo(args):
                 print(f"Skipping {input_path}, {output_path} exists and is populated...")
                 continue
 
-            print(f"Running RAFT on {input_path}")
+            print(f"Running RAFT on {input_path} with sample frequency {frameskip}")
             
             images = glob.glob(os.path.join(input_path, '*.png')) + \
                      glob.glob(os.path.join(input_path, '*.jpg'))
@@ -118,18 +76,13 @@ def demo(args):
             images = kept_images
 
             for idx, (imfile1, imfile2) in tqdm(enumerate(zip(images[:-1], images[1:]))):
-                image1 = load_image(imfile1)
-                image2 = load_image(imfile2)
+                image1 = load_image(imfile1).to(device)
+                image2 = load_image(imfile2).to(device)
 
                 padder = InputPadder(image1.shape)
                 image1, image2 = padder.pad(image1, image2)
 
                 flow_low, flow_up = model(image1, image2, iters=20, test_mode=True)
-
-                #print(flow_low.shape, flow_up.shape, image1.shape)
-
-                #im1prfx = os.path.basename(imfile1).split('.')[0]
-                #im2prfx = os.path.basename(imfile2).split('.')[0]
                 
                 ext = imfile1.split('.')[-1]
                 out_name = f"{idx}.{ext}"
@@ -138,8 +91,23 @@ def demo(args):
                 save_flow_raw(specific_path, flow_up)
 
 
+def run_flow_with_defaults(collect_path, collections, model_path, save_prefix="", device=0):
+    args = AttrDict({
+        "path": collect_path,
+        "save_prefix": save_prefix,
+        "device": device,
+        "model": model_path,
+        "alternate_corr": True,
+        "small": False,
+        "mixed_precision": False
+    })
+
+    flow(args, collections)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--device', help="gpu index to use", default=0)
     parser.add_argument('--model', help="restore checkpoint")
     parser.add_argument('--path', help="dataset for evaluation")
     parser.add_argument('--save_prefix', help='path prefix of where to save flow arrays, will default to input path if not given', default=None)
@@ -148,4 +116,4 @@ if __name__ == '__main__':
     parser.add_argument('--alternate_corr', action='store_true', help='use efficent correlation implementation')
     args = parser.parse_args()
 
-    demo(args)
+    flow(args, EXPERIMENTS)

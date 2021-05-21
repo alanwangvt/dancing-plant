@@ -1,3 +1,6 @@
 .vscode
-raft-mp4s
+models
+**/__pycache__
+**/*.egg-info
+**/raft-mp4s
 **/trace_cache

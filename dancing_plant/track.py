@@ -1,5 +1,3 @@
-import sys
-sys.path.append('core')
 
 import argparse
 import os
@@ -14,10 +12,6 @@ import time
 import math
 import hashlib
 
-from raft import RAFT
-from utils import flow_viz
-from utils.utils import InputPadder
-
 from tqdm import tqdm
 from natsort import natsorted, ns
 
@@ -25,8 +19,8 @@ from sklearn.cluster import MeanShift, estimate_bandwidth
 from skimage.color import rgb2hsv
 
 
-IMAGE_PATH = "/home/lowell/dancing-plant/DPI/05-04-2021/indexed/000.jpg"
-FLOW_PATH = "/mnt/slow_ssd/lowell/DPI/05-04-2021/indexed/raft-flow-raw-1"
+IMAGE_PATH = "/home/lowell/dancing-plant/DPI/05-18-2021a/indexed/000.jpg"
+FLOW_PATH = "/mnt/slow_ssd/lowell/DPI/test"
 
 FLOW_CHUNK_SIZE = 30  # Max number of flow images that will be loaded and used for tracking at a time
 
