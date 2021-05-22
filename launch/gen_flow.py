@@ -24,11 +24,11 @@ Parameters:
 
 Example:
     Say you wanted to generate flow maps for two image directories
-    'exp1' and 'exp2' located at 'a/b/c' using sampling every 1 and 5 frames
+    'exp1' and 'exp2' located at '/a/b/c' using sampling every 1 and 5 frames
     over time, respectively. And you want to save the flow maps to '/mnt/hdd' 
     and use GPU index 1. You would use the following...
 
-    experiment_root = "a/b/c"
+    experiment_root = "/a/b/c"
 
     collections = [
         ("exp1", 1),

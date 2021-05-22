@@ -11,6 +11,9 @@ import json
 import time
 import math
 import hashlib
+from attrdict import AttrDict
+
+import dancing_plant
 
 from tqdm import tqdm
 from natsort import natsorted, ns
@@ -19,8 +22,8 @@ from sklearn.cluster import MeanShift, estimate_bandwidth
 from skimage.color import rgb2hsv
 
 
-IMAGE_PATH = "/home/lowell/dancing-plant/DPI/05-18-2021a/indexed/000.jpg"
-FLOW_PATH = "/mnt/slow_ssd/lowell/DPI/test"
+IMAGE_PATH = "/home/lowell/dancing-plant/DPI/05-18-2021a/indexed/00.jpg"
+FLOW_PATH = "/mnt/slow_ssd/lowell/DPI/test/05-18-2021a/indexed/raft-flow-raw-1"
 
 FLOW_CHUNK_SIZE = 30  # Max number of flow images that will be loaded and used for tracking at a time
 
@@ -28,7 +31,7 @@ X_SPLITS = ()  # List of X coordinates to partition the track anchors by horizon
 Y_SPLITS = (1000,)  # List of Y coordinates to partition the track anchors by vertically
 SHOW_PARTITION = True  # Will draw vertical lines where the tracks are partitioned
 
-JUST_ANCHORS = False  # Will only run anchor generation if true, otherwise will run tracking afterwards
+JUST_ANCHORS = True  # Will only run anchor generation if true, otherwise will run tracking afterwards
 
 NUM_TRACE = 30  # Top NUM_TRACE most mobile corner traces will be kept
 
@@ -43,20 +46,28 @@ NONM_SIZE = 80  # Nonmax suppress tile size
 NONM_NUM = 5  # Nonmax suppress topK to keep
 
 
-def corner_detect(img):
+def out_pfx(file_name):
+    """Prepend file name with fixed output prefix."""
+    pfx = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "tracks")
+    if not osp.exists(pfx):
+        os.makedirs(pfx)
+    return osp.join(pfx, file_name)
+
+
+def corner_detect(img, block_size, sobel_size, free_k, nonm_size, nonm_num, corner_thresh):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = np.float32(gray)
-    dest = cv2.cornerHarris(gray, BLOCK_SIZE, SOBEL_SIZE, FREE_K)
-    dest = nonmax_suppress(dest, NONM_SIZE, NONM_NUM)
-    corner_map = dest > CORNER_THRESH * dest.max()
+    dest = cv2.cornerHarris(gray, block_size, sobel_size, free_k)
+    dest = nonmax_suppress(dest, nonm_size, nonm_num)
+    corner_map = dest > corner_thresh * dest.max()
     return np.argwhere(corner_map)
 
 
-def grid_anchor(img):
+def grid_anchor(img, grid_size):
     H, W, _ = img.shape
     x_count = np.repeat(np.expand_dims(np.arange(W), axis=1), H, axis=1).T
     y_count = np.repeat(np.expand_dims(np.arange(H), axis=1), W, axis=1)
-    coord_map = np.logical_and(x_count % GRID_SIZE == 0, y_count % GRID_SIZE == 0)
+    coord_map = np.logical_and(x_count % grid_size == 0, y_count % grid_size == 0)
     return np.argwhere(coord_map)
 
 
@@ -158,37 +169,37 @@ def draw_trace(img, trace):
 def np_to_csv(trace, idx=""):
     ypane = trace[:, :, 0]
     xpane = trace[:, :, 1]
-    np.savetxt(f"Y_trace{idx}.csv", ypane, fmt="%d", delimiter=",")
-    np.savetxt(f"X_trace{idx}.csv", xpane, fmt="%d", delimiter=",")
+    np.savetxt(out_pfx(f"Y_trace{idx}.csv"), ypane, fmt="%d", delimiter=",")
+    np.savetxt(out_pfx(f"X_trace{idx}.csv"), xpane, fmt="%d", delimiter=",")
 
 
-def draw_partitions(img):
+def draw_partitions(img, x_splits, y_splits):
     color = (0, 0, 255)  # b, g, r
     H, W = img.shape[:2]
 
     # horizontal partitions
-    tops = [(x, 0) for x in X_SPLITS]
-    bottoms = [(x, H - 1) for x in X_SPLITS]
+    tops = [(x, 0) for x in x_splits]
+    bottoms = [(x, H - 1) for x in x_splits]
     for t, b in zip(tops, bottoms):
         cv2.line(img, t, b, color, 1)
 
     # vertical partitions
-    lefts = [(0, y) for y in Y_SPLITS]
-    rights = [(W - 1, y) for y in Y_SPLITS]
+    lefts = [(0, y) for y in y_splits]
+    rights = [(W - 1, y) for y in y_splits]
     for l, r in zip(lefts, rights):
         cv2.line(img, l, r, color, 1)
 
 
-def get_partitions(img):
+def get_partitions(img, x_splits, y_splits):
     H, W = img.shape[:2]
 
     # horizontal partitions
-    lbound = (0, *X_SPLITS)
-    rbound = (*X_SPLITS, W)
+    lbound = (0, *x_splits)
+    rbound = (*x_splits, W)
 
     # vertical partitions
-    tbound = (0, *Y_SPLITS)
-    bbound = (*Y_SPLITS, H)
+    tbound = (0, *y_splits)
+    bbound = (*y_splits, H)
 
     x_bounds = [(l, r) for l, r in zip(lbound, rbound)]
     y_bounds = [(t, b) for t, b in zip(tbound, bbound)]
@@ -217,7 +228,7 @@ def get_process_chunks(flow_dir, flow_chunk_size):
     return chunks
 
 
-def get_working_hash():
+def get_working_hash(args):
     """
     Return first 8 hex chars of a hash of the image and flow paths
     plus any relevant anchor generation parameters.
@@ -225,22 +236,23 @@ def get_working_hash():
     post-processing (e.g. find_best_traces) without constantly
     reloading the dense flow files, which are large.
     """
-    if DENSE_TRACK:
-        PARAM_STR = str(GRID_SIZE)
+    if args.dense_track:
+        param_str = str(args.grid_size)
     else:
-        PARAM_STR = str(CORNER_THRESH) + \
-            str(BLOCK_SIZE) + \
-            str(SOBEL_SIZE) + \
-            str(FREE_K) + \
-            str(NONM_SIZE) + \
-            str(NONM_NUM)
+        param_str = str(args.corner_thresh) + \
+            str(args.block_size) + \
+            str(args.sobel_size) + \
+            str(args.free_k) + \
+            str(args.nonm_size) + \
+            str(args.nonm_num)
 
-    string = bytearray(IMAGE_PATH + FLOW_PATH + PARAM_STR, "utf8")
+    string = bytearray(args.image_path + args.flow_path + param_str, "utf8")
     return hashlib.sha1(string).hexdigest()[:8]
 
 
 def working_dir():
-    wdir = osp.join(osp.dirname(__file__), "trace_cache")
+    project_root = osp.dirname(osp.dirname(dancing_plant.__file__))
+    wdir = osp.join(project_root, "trace_cache")
     if not osp.exists(wdir):
         os.makedirs(wdir)
     return wdir
@@ -264,8 +276,8 @@ def load_working_trace(thash):
     return np.load(in_path)
 
 
-def trace_from_flow(flow_path, anchors):
-    chunks = get_process_chunks(flow_path, FLOW_CHUNK_SIZE)
+def trace_from_flow(anchors, flow_path, flow_chunk_size):
+    chunks = get_process_chunks(flow_path, flow_chunk_size)
     last_track = anchors.copy()
     traces = []
 
@@ -283,7 +295,7 @@ def trace_from_flow(flow_path, anchors):
     return np.concatenate(traces, axis=1)
 
 
-def find_best_traces(trace, parts):
+def find_best_traces(trace, parts, num_trace):
     """Based on most cumulative displacement."""
     fast_traces_list = []
     anch = trace[:, 0, :]  # extract anchors from trace
@@ -296,7 +308,7 @@ def find_best_traces(trace, parts):
 
         sel_traces = trace[in_range_idx, :, :]  # keep only traces with keypoint origin in current partition
 
-        fast_traces = delta_sort(sel_traces, NUM_TRACE)
+        fast_traces = delta_sort(sel_traces, num_trace)
         fast_traces_list.append(fast_traces)
     
     return fast_traces_list
@@ -322,41 +334,120 @@ def save_traces(traces_list, img):
     return part_imgs  # will be empty list if num_parts == 1 (i.e. whole image) since img is already annotated
 
 
-
-if __name__ == "__main__":
-    img = cv2.imread(IMAGE_PATH)
+def track(args):
+    img = cv2.imread(args.image_path)
     print("H, W =", img.shape[0], img.shape[1])
 
     begin = time.time()
 
-    thash = get_working_hash()
+    thash = get_working_hash(args)
     using_saved_trace = have_working_trace(thash)
 
     if using_saved_trace:  # can load exisiting anchors and trace
         print("Loading stored intermediate trace from trace_cache...")
         trace = load_working_trace(thash)
         anchors = trace[:, 0, :]
-    else:  # must generate using RAFT flow files
-        anchors = corner_detect(img) if not DENSE_TRACK else grid_anchor(img)
+    elif not args.dense_track:
+        anchors = corner_detect(img, **gather_corner_detect_kwargs(args))
+    else:   
+        anchors = grid_anchor(img, args.grid_size)
 
-    if not JUST_ANCHORS:
+    if not args.just_anchors:
         if not using_saved_trace:
-            trace = trace_from_flow(FLOW_PATH, anchors)
+            trace = trace_from_flow(anchors, args.flow_path, args.flow_chunk_size)
             save_working_trace(thash, trace)
 
-        parts = get_partitions(img)
-        fast_traces_list = find_best_traces(trace, parts)
+        parts = get_partitions(img, args.x_splits, args.y_splits)
+        fast_traces_list = find_best_traces(trace, parts, args.num_trace)
         
         part_imgs = save_traces(fast_traces_list, img)
         for pidx, pimg in enumerate(part_imgs):
-            cv2.imwrite(f"track{pidx}.jpg", pimg)
+            cv2.imwrite(out_pfx(f"track{pidx}.jpg"), pimg)
     else:
         draw_anchors(img, anchors)
 
-    if SHOW_PARTITION:
-        draw_partitions(img)
+    if args.show_partition:
+        draw_partitions(img, args.x_splits, args.y_splits)
 
-    cv2.imwrite("track.jpg", img)
+    cv2.imwrite(out_pfx("track.jpg"), img)
     
     process_time = time.time() - begin
     print("Time elapsed:", process_time)
+
+
+def gather_kwargs(**kwargs):
+    return AttrDict(kwargs)
+
+
+def extract_kwargs(keys, **kwargs):
+    extraction = {}
+    for k in keys:
+        if k not in kwargs:
+            raise ValueError(f"Missing {k} key-word parameter")
+        extraction[k] = kwargs[k]
+    return extraction
+
+
+def gather_corner_detect_kwargs(args):
+    corner_detect_kw = (
+        "block_size",
+        "sobel_size",
+        "free_k",
+        "nonm_size",
+        "nonm_num",
+        "corner_thresh"
+    )
+    
+    return extract_kwargs(corner_detect_kw, **dict(args))
+
+
+def run_track_with_defaults(
+    image_path, 
+    flow_path, 
+    x_splits, 
+    y_splits,
+    show_partition,
+    just_anchors,
+    num_trace,
+    grid_size
+    ):
+    track(gather_kwargs(
+        image_path=image_path,
+        flow_path=flow_path,
+        flow_chunk_size=30,
+        x_splits=x_splits,
+        y_splits=y_splits,
+        show_partition=show_partition,
+        just_anchors=just_anchors,
+        num_trace=num_trace,
+        dense_track=True,
+        grid_size=grid_size,
+        corner_thresh=None,
+        block_size=None,
+        sobel_size=None,
+        free_k=None,
+        nonm_size=None,
+        nonm_num=None
+    ))
+
+
+
+if __name__ == "__main__":
+    track(gather_kwargs(
+        image_path=IMAGE_PATH,
+        flow_path=FLOW_PATH,
+        flow_chunk_size=FLOW_CHUNK_SIZE,
+        x_splits=X_SPLITS,
+        y_splits=Y_SPLITS,
+        show_partition=SHOW_PARTITION,
+        just_anchors=JUST_ANCHORS,
+        num_trace=NUM_TRACE,
+        dense_track=DENSE_TRACK,
+        grid_size=GRID_SIZE,
+        corner_thresh=CORNER_THRESH,
+        block_size=BLOCK_SIZE,
+        sobel_size=SOBEL_SIZE,
+        free_k=FREE_K,
+        nonm_size=NONM_SIZE,
+        nonm_num=NONM_NUM
+    ))
