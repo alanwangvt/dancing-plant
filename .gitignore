@@ -2,6 +2,7 @@
 models
 trace_cache
 tracks
+clustered
 **/__pycache__
 **/*.egg-info
 **/raft-mp4s
