@@ -1,3 +1,22 @@
+"""
+Sorts image files with the naming convention of the Azure camera.
+
+'python imsort.py <DIR>' --> show current sort of files in directory <DIR>.
+
+'python imsort.py -r <DIR>' --> rename <DIR> in sortable military time and store at <DIR>/military-time/
+Example:
+    before > Webcam Shot Date February 9 2021 Time 12.59.19 AM.jpg
+    after  > Webcam Shot Date February 9 2021 Time 00.59.19.jpg
+
+'python imsort -i <DIR>' --> rename <DIR> in indexed format according to CURRENT SORT and store at <DIR/indexed/
+Example:
+    before > Webcam Shot Date February 9 2021 Time 00.59.19.jpg
+    after  > 0000.jpg
+This assumes that image is the first taken. The following will be 0001.jpg, 0002.jpg, and so on.
+
+Standard procedure is to use '-r' on the original directory. Then use '-i' on that military-time directory
+to get a structure like <BASE>/military-time/indexed/.
+"""
 
 import argparse
 import os
