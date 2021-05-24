@@ -11,6 +11,8 @@ The typical pipeline for this process is:
 
 A high-level user interface for using this package is provided in the /launch directory.
 
+**See the in-code documentation provided in each launch file.**
+
 | Python Launch File | Description |
 | ------------------ | ----------- |
 | gen_flow.py | generate UV flow maps with a pretrained RAFT model |
@@ -20,8 +22,6 @@ A high-level user interface for using this package is provided in the /launch di
 | imsort.py | access file name sorting and indexing tools |
 
 **clean_up.sh** is also provided to conveniently erase all existing images and CSVs generated.
-
-For more info, see the in-code documentation provided in each launch file.
 
 All files in dancing_plant/raft and alt_cuda_corr/, along with the model downloaded via **download_raft_model.sh**, are directly adapted from the [RAFT](https://github.com/princeton-vl/RAFT) GitHub repository.
 
