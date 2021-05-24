@@ -6,4 +6,5 @@ clustered
 **/__pycache__
 **/*.egg-info
 **/raft-mp4s
-
+alt_cuda_corr/build
+alt_cuda_corr/dist
