@@ -23,7 +23,7 @@ A high-level user interface for using this package is provided in the /launch di
 
 **clean_up.sh** is also provided to conveniently erase all existing images and CSVs generated.
 
-All files in dancing_plant/raft and alt_cuda_corr/, along with the model downloaded via **download_raft_model.sh**, are directly adapted from the [RAFT](https://github.com/princeton-vl/RAFT) GitHub repository.
+All files in dancing_plant/raft, dancing_plant/flow.py, and alt_cuda_corr/, along with the model downloaded via **download_raft_model.sh**, are directly adapted from the [RAFT](https://github.com/princeton-vl/RAFT) GitHub repository.
 
 ## Installation
 
