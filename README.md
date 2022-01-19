@@ -36,6 +36,10 @@ pip install -e .
 ```
 
 2) Install PyTorch with CUDA support. PyTorch version 1.6.0 and CudaToolKit 10.1 are tested to work with the following step.
+2022.1.18: 1.6.0 no longer available, the closest being:
+PyTorch 1.7.1 + CUDA 1.7.0 Windows pip:
+pip install torch==1.7.1+cu101 torchvision==0.8.2+cu101 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
+
 
 3) Compile RAFT's custom CUDA extension which significantly reduces GPU memory requirements.
 
