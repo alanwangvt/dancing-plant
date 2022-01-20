@@ -59,7 +59,7 @@ device = 0
 
 
 def get_model_path():
-    model_path = "../models/raft-things.pth"  # relative path
+    model_path = "models/raft-things.pth"  # relative path
     import os.path as osp
     if not osp.exists(model_path):
         raise EnvironmentError("Need to download RAFT model."
