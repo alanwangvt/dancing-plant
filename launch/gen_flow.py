@@ -47,7 +47,7 @@ Example:
 experiment_root = "/home/alanwang/dancing-plant/data"
 
 collections = [
-    ("05-18-2021a/indexed", 10)
+    ("data20210124/frames", 5)
 ]
 
 save_prefix = "/home/alanwang/dancing-plant/data"
@@ -73,6 +73,6 @@ if __name__ == "__main__":
         experiment_root,
         collections,
         get_model_path(),
-        save_prefix=save_prefix,
-        device=device
+        save_prefix,         ### save_prefix=save_prefix,
+        device        ###   device=device
     )
