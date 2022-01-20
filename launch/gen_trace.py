@@ -105,7 +105,7 @@ disp_img_path = "/home/alanwang/dancing-plant/data/20210124/frames/0000.jpg"
 x_splits = (580, 1130,)
 y_splits = ()
 
-num_trace = 20
+num_trace = 10
 
 grid_size = 100
 
