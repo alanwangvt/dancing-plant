@@ -42,7 +42,7 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-disp_img_path = "/home/lowell/dancing-plant/DPI/05-18-2021a/indexed/00.jpg"
+disp_img_path = "/home/alanwang/dancing-plant/data/20210124/frames/0000.jpg"
 
 num_cluster = 3
 
