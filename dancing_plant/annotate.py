@@ -92,9 +92,9 @@ def create_video(frame_path, fps):
     imageio.mimwrite(vid_path, frames, fps=fps)
 
 
-def run_annotate_with_defaults(image_path, sample_freq, circ_size, fps=25):
+def run_annotate_with_defaults(image_path, trace_path, sample_freq, circ_size, fps=25):
     """Also automatically creates a video with annotated frames."""
-    trace_path = track_out_pfx("")
+    ## trace_path = track_out_pfx("")
 
     if not os.listdir(trace_path):
         raise EnvironmentError("No trace CSVs found at expected trace path: "

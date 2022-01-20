@@ -60,6 +60,10 @@ module restore
 export CXX=g++ 
 
 export PYTHONPATH=/home/alanwang/dancing-plant
+pip install -U opencv-python
+pip install -U h5py
+
+In ~/.bashrc, add: alias python='/cm/local/apps/python37/bin/python'
 
 3) Compile RAFT's custom CUDA extension which significantly reduces GPU memory requirements.
 

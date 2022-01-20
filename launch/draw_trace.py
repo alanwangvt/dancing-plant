@@ -43,7 +43,9 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-experiment_dir = "/home/lowell/dancing-plant/DPI/05-18-2021a/indexed"
+experiment_dir = "/home/alanwang/dancing-plant/data/20210124/frames"
+
+trace_path = "/home/alanwang/dancing-plant/tracks"
 
 sample_freq = 1
 
@@ -59,6 +61,7 @@ if __name__ == "__main__":
     from dancing_plant.annotate import run_annotate_with_defaults
     run_annotate_with_defaults(
         experiment_dir,
+        trace_path,
         sample_freq,
         circle_size,
         fps=fps
