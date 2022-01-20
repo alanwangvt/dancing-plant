@@ -79,8 +79,8 @@ def annotate(image_path, trace_path, num_part, sample_freq, circ_size, save_path
                 if img_idx==229:
                     print(f"trace_idx={trace_idx}  img_idx={img_idx}") 
                     print(xtr.shape)               
-                x = xtr[trace_idx, img_idx]
-                y = ytr[trace_idx, img_idx]
+                x = xtr[trace_idx, img_idx-1]
+                y = ytr[trace_idx, img_idx-1]
                 cv2.circle(img, (x, y), circ_size, tcol[trace_idx], -1)
 
         fout_path = osp.join(save_path, osp.basename(ipath))
