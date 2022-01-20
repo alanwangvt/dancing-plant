@@ -44,13 +44,13 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-experiment_root = "/home/lowell/dancing-plant/DPI"
+experiment_root = "/home/alanwang/dancing-plant/data"
 
 collections = [
     ("05-18-2021a/indexed", 10)
 ]
 
-save_prefix = "/mnt/slow_ssd/lowell/DPI/test"
+save_prefix = "/home/alanwang/dancing-plant/data"
 
 device = 0
 

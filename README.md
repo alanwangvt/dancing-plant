@@ -41,6 +41,18 @@ PyTorch 1.7.1 + CUDA 1.7.0 Windows pip:
 pip install torch==1.7.1+cu101 torchvision==0.8.2+cu101 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
 
 
+Arc Instruction:
+infer1.arc.vt.edu
+module load EasyBuild
+module load python37
+module load CUDA/11.1.1-GCC-10.2.0
+module load Anaconda3/2020.11
+nvidia-smi  ## make sure you see GPUs
+conda create -n pytorch
+source activate pytorch
+conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=10.1 -c pytorch
+export CXX=g++ 
+
 3) Compile RAFT's custom CUDA extension which significantly reduces GPU memory requirements.
 
 ```
@@ -51,6 +63,7 @@ cd alt_cuda_corr && python setup.py install && cd ..
 
 ```
 pip install -r requirements.txt
+(Arc: pip install -U future if the future package is missing)
 ```
 
 5) Download the RAFT model.
