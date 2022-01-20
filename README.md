@@ -43,6 +43,7 @@ pip install torch==1.7.1+cu101 torchvision==0.8.2+cu101 torchaudio==0.7.2 -f htt
 
 Arc Instruction:
 infer1.arc.vt.edu
+Firs-time use:
 module load EasyBuild
 module load python37
 module load CUDA/11.1.1-GCC-10.2.0
@@ -51,6 +52,11 @@ nvidia-smi  ## make sure you see GPUs
 conda create -n pytorch
 source activate pytorch
 conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=10.1 -c pytorch
+export CXX=g++ 
+module save
+
+After first-time:
+module restore
 export CXX=g++ 
 
 3) Compile RAFT's custom CUDA extension which significantly reduces GPU memory requirements.
