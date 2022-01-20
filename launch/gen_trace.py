@@ -98,12 +98,12 @@ Example:
 just_anchors = False
 show_partition = True
 
-flow_dir = "/mnt/slow_ssd/lowell/DPI/test/05-18-2021a/indexed/raft-flow-raw-10"
+flow_dir = "/home/alanwang/dancing-plant/data/20210124/frames/raft-flow-raw-5"
 
-disp_img_path = "/home/lowell/dancing-plant/DPI/05-18-2021a/indexed/00.jpg"
+disp_img_path = "/home/alanwang/dancing-plant/data/20210124/frames/0000.jpg"
 
-x_splits = (1700,)
-y_splits = (500, 1500)
+x_splits = (580, 1130,)
+y_splits = ()
 
 num_trace = 30
 
