@@ -59,6 +59,8 @@ After first-time:
 module restore
 export CXX=g++ 
 
+export PYTHONPATH=/home/alanwang/dancing-plant
+
 3) Compile RAFT's custom CUDA extension which significantly reduces GPU memory requirements.
 
 ```

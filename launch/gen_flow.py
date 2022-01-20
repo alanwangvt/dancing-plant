@@ -44,13 +44,13 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-experiment_root = "/home/alanwang/dancing-plant/data"
+experiment_root = "/home/alanwang/dancing-plant/data/"
 
 collections = [
-    ("data20210124/frames", 5)
+    ("20210124/frames", 5)
 ]
 
-save_prefix = "/home/alanwang/dancing-plant/data"
+save_prefix = "/home/alanwang/dancing-plant/data/"
 
 device = 0
 
