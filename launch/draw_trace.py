@@ -47,7 +47,7 @@ experiment_dir = "/home/alanwang/dancing-plant/data/20210124/frames"
 
 trace_path = "/home/alanwang/dancing-plant/tracks"
 
-sample_freq = 1
+sample_freq = 5
 
 circle_size = 10
 

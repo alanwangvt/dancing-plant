@@ -36,34 +36,6 @@ pip install -e .
 ```
 
 2) Install PyTorch with CUDA support. PyTorch version 1.6.0 and CudaToolKit 10.1 are tested to work with the following step.
-2022.1.18: 1.6.0 no longer available, the closest being:
-PyTorch 1.7.1 + CUDA 1.7.0 Windows pip:
-pip install torch==1.7.1+cu101 torchvision==0.8.2+cu101 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
-
-
-Arc Instruction:
-infer1.arc.vt.edu
-Firs-time use:
-module load EasyBuild
-module load python37
-module load CUDA/11.1.1-GCC-10.2.0
-module load Anaconda3/2020.11
-nvidia-smi  ## make sure you see GPUs
-conda create -n pytorch
-source activate pytorch
-conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=10.1 -c pytorch
-export CXX=g++ 
-module save
-
-After first-time:
-module restore
-export CXX=g++ 
-
-export PYTHONPATH=/home/alanwang/dancing-plant
-pip install -U opencv-python
-pip install -U h5py
-
-In ~/.bashrc, add: alias python='/cm/local/apps/python37/bin/python'
 
 3) Compile RAFT's custom CUDA extension which significantly reduces GPU memory requirements.
 
@@ -84,3 +56,35 @@ pip install -r requirements.txt
 ./download_raft_model.sh
 ```
 
+cmd2 0.8.9 requires pyperclip, which is not installed.
+cmd2 0.8.9 requires wcwidth; sys_platform != "win32", which is not installed.
+torch 1.6.0 requires future, which is not installed.
+
+Arc Instruction:
+infer1.arc.vt.edu
+Firs-time use:
+module load EasyBuild
+<!-- module load python37 -->
+<!-- module load CUDA/11.1.1-GCC-10.2.0 -->
+module load CUDA/10.1.243-GCC-8.3.0
+module load Anaconda3/2020.11
+nvidia-smi  ## make sure you see GPUs
+module save
+conda create -n pytorch python=3.7.0
+unset PYTHONPATH
+source activate pytorch
+conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=10.1 -c pytorch 
+export CXX=g++ 
+git clone https://github.com/alanwangvt/dancing-plant.git
+"run steps 1,3,4,5 above"
+use "pip install" to install any missing packages
+
+<!-- In ~/.bashrc, add: alias python='/cm/local/apps/python37/bin/python'
+                    export PYTHONPATH=/home/alanwang/dancing-plant:$PYTHONPATH
+                    export CXX=g++ 
+            then: source ~/.bashrc -->
+
+After first-time:
+module restore
+unset PYTHONPATH
+source activate pytorch
