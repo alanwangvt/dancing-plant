@@ -68,13 +68,13 @@ def annotate(image_path, trace_path, num_part, sample_freq, circ_size, save_path
     for img_idx, ipath in tqdm(enumerate(sampled_image_paths)):
         img = cv2.imread(ipath)
 
-       ## print(f"img_idx={img_idx} image path={ipath}")
+        print(f"img_idx={img_idx}")
 
         for split_idx in range(num_part):
             xtr = x_split_traces[split_idx]
             ytr = y_split_traces[split_idx]
             tcol = tcolor[split_idx]
-
+            print(f"xtr={xtr.shape}  ytr={ytr.shape}")
             for trace_idx in range(len(xtr)):             
                 x = xtr[trace_idx, img_idx-1]
                 y = ytr[trace_idx, img_idx-1]
