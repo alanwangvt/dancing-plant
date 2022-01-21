@@ -72,11 +72,11 @@ def annotate(image_path, trace_path, num_part, sample_freq, circ_size, save_path
 
         for split_idx in range(num_part):
             xtr = x_split_traces[split_idx]
-            print(xtr[trace_idx])
             ytr = y_split_traces[split_idx]
             tcol = tcolor[split_idx]
             print(f"xtr={xtr.shape}  ytr={ytr.shape}")
-            for trace_idx in range(len(xtr)):             
+            for trace_idx in range(len(xtr)):     
+                print(xtr[trace_idx])        
                 x = xtr[trace_idx, img_idx-1]
                 y = ytr[trace_idx, img_idx-1]
                 cv2.circle(img, (x, y), circ_size, tcol[trace_idx], -1)
