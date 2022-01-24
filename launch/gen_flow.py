@@ -55,7 +55,7 @@ collections = [
     ("dataset01/20210621BT/5", 1)
 ]
 
-save_prefix = "/work/alanwang/dataset01/20210621BT/"
+save_prefix = "/work/alanwang/"
 
 device = 0
 
