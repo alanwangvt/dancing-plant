@@ -44,7 +44,7 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-experiment_root = "/work/cascades/alanwang/"
+experiment_root = "/work/alanwang/"
 
 collections = [
     ("dataset01/20210621BT/0", 1),
@@ -55,7 +55,7 @@ collections = [
     ("dataset01/20210621BT/5", 1)
 ]
 
-save_prefix = "/work/cascades/alanwang/dataset01/20210621BT/"
+save_prefix = "/work/alanwang/dataset01/20210621BT/"
 
 device = 0
 
