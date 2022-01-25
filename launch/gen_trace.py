@@ -100,7 +100,7 @@ show_partition = True
 
 flow_dir = "/work/alanwang/dataset01/20210621BT/0/raft-flow-raw-1"
 
-disp_img_path = "/work/alanwang/dataset01/20210621BT/0/0000.jpg"
+disp_img_path = "/work/alanwang/dataset01/20210621BT/0/0001.jpg"
 
 x_splits = ()
 y_splits = ()
