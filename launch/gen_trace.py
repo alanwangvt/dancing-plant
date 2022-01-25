@@ -98,16 +98,16 @@ Example:
 just_anchors = False
 show_partition = True
 
-flow_dir = "/home/alanwang/dancing-plant/data/20210124/frames/raft-flow-raw-5"
+flow_dir = "/work/alanwang/dataset01/20210621BT/0/raft-flow-raw-1"
 
-disp_img_path = "/home/alanwang/dancing-plant/data/20210124/frames/0000.jpg"
+disp_img_path = "/work/alanwang/dataset01/20210621BT/0/0000.jpg"
 
-x_splits = (580, 1130,)
+x_splits = ()
 y_splits = ()
 
 num_trace = 30
 
-grid_size = 100
+grid_size = 50
 
 ### SHOULD NOT NEED TO MODIFY BELOW ###
 #######################################
