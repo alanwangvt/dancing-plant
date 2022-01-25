@@ -43,9 +43,9 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-experiment_dir = "/home/alanwang/dancing-plant/data/20210124/frames"
+experiment_dir = "/work/alanwang/dataset01/20210621BT/0/"
 
-trace_path = "/home/alanwang/dancing-plant/tracks"
+trace_path = "/home/alanwang/dancing-plant/tracks/"
 
 sample_freq = 5
 
