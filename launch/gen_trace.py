@@ -107,7 +107,7 @@ y_splits = ()
 
 num_trace = 30
 
-grid_size = 50
+grid_size = 100
 
 ### SHOULD NOT NEED TO MODIFY BELOW ###
 #######################################
