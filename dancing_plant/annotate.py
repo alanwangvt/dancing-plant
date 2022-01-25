@@ -102,7 +102,8 @@ def run_annotate_with_defaults(image_path, trace_path, sample_freq, circ_size, f
         raise EnvironmentError("No trace CSVs found at expected trace path: "
             f"{trace_path}\nRun gen_flow.py and gen_trace.py first.")
 
-    num_part = get_num_part(trace_path)
+    # num_part = get_num_part(trace_path)
+    num_part = 1 
 
     save_path = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "annotated")
     if not osp.exists(save_path):
