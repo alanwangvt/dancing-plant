@@ -42,7 +42,7 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-disp_img_path = "/work/alanwang/dataset01/20210623AT/2/2-001.jpg"
+disp_img_path = "/work/alanwang/dataset01/20210623AT/3/3-001.jpg"
 
 num_cluster = 3
 
