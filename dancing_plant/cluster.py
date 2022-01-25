@@ -100,7 +100,11 @@ def get_num_part(trace_path):
     file_names = os.listdir(trace_path)
     trace_key = "_trace"
     trace_names = filter(lambda s: s[1:].startswith(trace_key), file_names)
-    part_idxs = [int(x.split(trace_key)[-1][0]) for x in trace_names]
+    part_idxs = [0]
+    try:
+        part_idxs = [int(x.split(trace_key)[-1][0]) for x in trace_names]
+    except:
+        print("Trace file name parsing errors occurred. It is assumed to have only one trace file.")
     return max(part_idxs) + 1
 
 
@@ -111,8 +115,8 @@ def run_cluster_with_defaults(image_path, num_cluster, num_trace):
         raise EnvironmentError("No trace CSVs found at expected trace path: "
             f"{trace_path}\nRun gen_flow.py and gen_trace.py first.")
 
-    # num_part = get_num_part(trace_path)
-    num_part = 1
+    num_part = get_num_part(trace_path)
+    #num_part = 1
 
     if type(num_cluster) is int:
         num_cluster = [num_cluster] * num_part
