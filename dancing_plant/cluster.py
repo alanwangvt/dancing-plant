@@ -111,7 +111,8 @@ def run_cluster_with_defaults(image_path, num_cluster, num_trace):
         raise EnvironmentError("No trace CSVs found at expected trace path: "
             f"{trace_path}\nRun gen_flow.py and gen_trace.py first.")
 
-    num_part = get_num_part(trace_path)
+    # num_part = get_num_part(trace_path)
+    num_part = 1
 
     if type(num_cluster) is int:
         num_cluster = [num_cluster] * num_part
