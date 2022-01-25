@@ -43,7 +43,7 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-experiment_dir = "/work/alanwang/dataset01/20210623AT/5/"
+experiment_dir = "/work/alanwang/dataset01/20210621BT/0/"
 
 trace_path = "/home/alanwang/dancing-plant/tracks/"
 
