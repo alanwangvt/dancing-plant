@@ -47,7 +47,7 @@ experiment_dir = "/work/alanwang/dataset01/20210621BT/0/"
 
 trace_path = "/home/alanwang/dancing-plant/tracks/"
 
-sample_freq = 5
+sample_freq = 1
 
 circle_size = 10
 
