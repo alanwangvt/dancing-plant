@@ -98,9 +98,9 @@ Example:
 just_anchors = False
 show_partition = True
 
-flow_dir = "/work/alanwang/dataset01/20210621BT/1/raft-flow-raw-1"
+flow_dir = "/work/alanwang/dataset01/20210621BT/2/raft-flow-raw-1"
 
-disp_img_path = "/work/alanwang/dataset01/20210621BT/1/1-001.jpg"
+disp_img_path = "/work/alanwang/dataset01/20210621BT/2/2-001.jpg"
 
 x_splits = ()
 y_splits = ()
