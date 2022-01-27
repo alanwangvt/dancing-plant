@@ -1,95 +1,22 @@
 """
-Sorts image files with the naming convention of the Azure camera.
+This script is used to batch process gen_trace, draw_trace, and cluster trace after flows have been generated.
+Parameter:
+path - The path to the dataset. The path presumably contains two level1 folders, e.g., 20210101AT and 20210101BT. Each level1 folder contains several level2 folders, each of which contains the actual images and a raft-flow folder
 
-'python imsort.py <DIR>' --> show current sort of files in directory <DIR>.
+Usage:
+python launch/batchTrace.py /work/alanwang/dataset01
 
-'python imsort.py -r <DIR>' --> rename <DIR> in sortable military time and store at <DIR>/military-time/
-Example:
-    before > Webcam Shot Date February 9 2021 Time 12.59.19 AM.jpg
-    after  > Webcam Shot Date February 9 2021 Time 00.59.19.jpg
-
-'python imsort -i <DIR>' --> rename <DIR> in indexed format according to CURRENT SORT and store at <DIR/indexed/
-Example:
-    before > Webcam Shot Date February 9 2021 Time 00.59.19.jpg
-    after  > 0000.jpg
-This assumes that image is the first taken. The following will be 0001.jpg, 0002.jpg, and so on.
-
-Standard procedure is to use '-r' on the original directory. Then use '-i' on that military-time directory
-to get a structure like <BASE>/military-time/indexed/.
+Result:
+Each image folder will contain four subfolders: track, trace_cache, annotated, clustered
 """
 
 import argparse
 import os
+import dancing_plant
+import os.path as osp
 import glob
 import re
-from shutil import copyfile
-
-# def get_file_sort(args):
-#     images = glob.glob(os.path.join(args.path, '*.png')) + \
-#              glob.glob(os.path.join(args.path, '*.jpg'))
-             
-#     images = sorted(images)
-#     for imp in images:
-#         print(imp)
-
-
-# def index(args):
-#     images = glob.glob(os.path.join(args.path, '*.png')) + \
-#              glob.glob(os.path.join(args.path, '*.jpg'))
-             
-#     images = sorted(images)
-    
-#     out_path = os.path.join(args.path, "indexed")
-#     if not os.path.exists(out_path):
-#         os.mkdir(out_path)
-
-#     scale = len(images)
-#     zpad = 0
-#     while scale >= 1:
-#         scale /= 10
-#         zpad += 1
-
-#     for i, imp in enumerate(images):
-#         ext = imp.split('.')[-1]
-#         out_name = str(i).zfill(zpad) + '.' + ext
-#         out_file = os.path.join(out_path, out_name)
-#         print(out_file)
-#         copyfile(imp, out_file)
-
-
-# def revise(args):
-#     images = glob.glob(os.path.join(args.path, '*.png')) + \
-#              glob.glob(os.path.join(args.path, '*.jpg'))
-             
-#     out_path = os.path.join(args.path, "military-time")
-#     if not os.path.exists(out_path):
-#         os.mkdir(out_path)
-
-#     for imp in images:
-#         tokens = imp.split(' ')
-#         phase, ext = tokens[-1].split('.')
-#         hour, mint, sec = tokens[-2].split('.')
-
-#         hour = int(hour)
-#         if phase == "PM" and hour != 12:
-#             hour += 12
-#         elif phase == "AM" and hour == 12:
-#             hour = 0
-#         if hour < 10:
-#             hour = '0' + str(hour)
-#         else:
-#             hour = str(hour)
-
-#         mtime = ".".join([hour, mint, sec])
-#         ext = "." + ext
-#         ntokens = tokens[:-2] + [mtime]
-#         nimp = " ".join(ntokens) + ext
-
-#         file_path = os.path.join(out_path, os.path.basename(nimp))
-#         print(file_path)
-#         copyfile(imp, file_path)
-
-
+import shutil
 
 
 
@@ -118,5 +45,20 @@ if __name__ == '__main__':
                     # print(level2pathname) # this is supposed to be a number between 0 and 5
                     tBatchTrigger(level1path, level2pathname)
                     dBatchTrigger(level1path, level2pathname)
-                    cBatchTrigger(level1path, level2pathname)                    
+                    cBatchTrigger(level1path, level2pathname)  
+
+                    # mv trace_cache $1
+                    # mv tracks $1
+                    # mv clustered $1
+                    # mv annotated $1
+                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "tracks")
+                    dest = osp.join(level1path,level2pathname)
+                    shutil.move(source, dest)   
+                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "trace_cache")
+                    shutil.move(source, dest)            
+                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "clustered")
+                    shutil.move(source, dest)          
+                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "annotated")
+                    shutil.move(source, dest)     
                     # print(level1path)
+

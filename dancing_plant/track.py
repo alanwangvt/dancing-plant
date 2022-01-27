@@ -169,7 +169,6 @@ def draw_trace(img, trace):
 def np_to_csv(trace, idx=""):
     ypane = trace[:, :, 0]
     xpane = trace[:, :, 1]
-    print(out_pfx(f"Y_trace{idx}.csv"))
     np.savetxt(out_pfx(f"Y_trace{idx}.csv"), ypane, fmt="%d", delimiter=",")
     np.savetxt(out_pfx(f"X_trace{idx}.csv"), xpane, fmt="%d", delimiter=",")
 
