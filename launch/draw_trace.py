@@ -57,7 +57,7 @@ fps = 20
 
 ### SHOULD NOT NEED TO MODIFY BELOW ###
 #######################################
-def dBatchTrigger(fpath, imgnum, sf):
+def dBatchTrigger(fpath, imgnum, sf: int):
     from dancing_plant.annotate import run_annotate_with_defaults
     experiment_dir = os.path.join(fpath, imgnum)
     print('draw:')
