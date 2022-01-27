@@ -47,16 +47,8 @@ Example:
 experiment_root = "/work/alanwang/"
 
 collections = [
-    ("dataset03/20210701BT/1", 5),
-    ("dataset03/20210701BT/3", 5),
-    ("dataset03/20210701BT/4", 5),
-    ("dataset03/20210702IAT/1", 5),
-    ("dataset03/20210702IAT/3", 5),
-    ("dataset03/20210702IAT/4", 5),
-    ("dataset03/20210702IAT/5", 5),
-    ("dataset03/20210703AT/1", 5),
-    ("dataset03/20210703AT/3", 5),
-    ("dataset03/20210703AT/4", 5)
+    ("dataset02/20210626AT/0", 5),
+    ("dataset02/20210626AT/1", 5),
 ]
 
 save_prefix = "/work/alanwang/"
