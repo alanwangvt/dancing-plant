@@ -94,9 +94,9 @@ from shutil import copyfile
 
 
 if __name__ == '__main__':
-    from launch.gen_trace import tBatchTrigger
-    from launch.draw_trace import dBatchTrigger
-    from launch.cluster_trace import cBatchTrigger
+    from gen_trace import tBatchTrigger
+    from draw_trace import dBatchTrigger
+    from cluster_trace import cBatchTrigger
     parser = argparse.ArgumentParser()
     parser.add_argument('path', nargs='+', help="the path to the dataset, e.g., /work/alanwang/dataset01")
     args = parser.parse_args()
