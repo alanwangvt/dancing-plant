@@ -17,6 +17,7 @@ import os.path as osp
 import glob
 import re
 import shutil
+from natsort import natsorted
 
 
 
@@ -35,8 +36,7 @@ if __name__ == '__main__':
         print(sample_freq)
         if os.path.exists(dpath):
             # print(dpath)
-            level1 = glob.glob(os.path.join(dpath, '*/'))
-            # level1 = os.listdir(dpath)
+            level1 = natsorted(glob.glob(os.path.join(dpath, '*/')))
             # print(level1)
             for i, level1path in enumerate(level1):   # e.g., 20210101BT or 20210102AT
                 print(level1path)
@@ -47,22 +47,26 @@ if __name__ == '__main__':
                     level2pathname = level2pathlist[len(level2pathlist)-2]
                     # print(level1path)
                     # print(level2pathname) # this is supposed to be a number between 0 and 5
-                    tBatchTrigger(level1path, level2pathname, sample_freq)
-                    dBatchTrigger(level1path, level2pathname, sample_freq)
-                    cBatchTrigger(level1path, level2pathname)  
+                    print(os.path.join(level1path, level2pathname, 'tracks'))
+                    if not os.path.exists(os.path.join(level1path, level2pathname, 'tracks')):
+                        tBatchTrigger(level1path, level2pathname, sample_freq)
+                        dBatchTrigger(level1path, level2pathname, sample_freq)
+                        cBatchTrigger(level1path, level2pathname)                  
+                        # mv trace_cache $1
+                        # mv tracks $1
+                        # mv clustered $1
+                        # mv annotated $1
+                        source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "tracks")
+                        dest = osp.join(level1path,level2pathname)
+                        shutil.move(source, dest)   
+                        source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "trace_cache")
+                        shutil.move(source, dest)            
+                        source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "clustered")
+                        shutil.move(source, dest)          
+                        source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "annotated")
+                        shutil.move(source, dest)     
+                        # print(level1path)
+                    else:
+                        print("The tracks folder already exists. Skip the current image set.") 
 
-                    # mv trace_cache $1
-                    # mv tracks $1
-                    # mv clustered $1
-                    # mv annotated $1
-                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "tracks")
-                    dest = osp.join(level1path,level2pathname)
-                    shutil.move(source, dest)   
-                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "trace_cache")
-                    shutil.move(source, dest)            
-                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "clustered")
-                    shutil.move(source, dest)          
-                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "annotated")
-                    shutil.move(source, dest)     
-                    # print(level1path)
 
