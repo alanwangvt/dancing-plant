@@ -39,11 +39,12 @@ Example:
     fps = 10
 
 """
+import os
 
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-experiment_dir = "/work/alanwang/dataset01/20210621BT/5/"
+experiment_dir = "/work/alanwang/dataset02/20210624BT/0/"
 
 trace_path = "/home/alanwang/dancing-plant/tracks/"
 
@@ -55,7 +56,19 @@ fps = 20
 
 ### SHOULD NOT NEED TO MODIFY BELOW ###
 #######################################
+def dBatchTrigger(fpath, imgnum):
+    from dancing_plant.annotate import run_annotate_with_defaults
+    experiment_dir = os.path.join(fpath, imgnum)
+    print('draw:')
+    print(experiment_dir)
 
+    run_annotate_with_defaults(
+        experiment_dir,
+        trace_path,
+        sample_freq,
+        circle_size,
+        fps=fps
+    )
 
 if __name__ == "__main__":
     from dancing_plant.annotate import run_annotate_with_defaults

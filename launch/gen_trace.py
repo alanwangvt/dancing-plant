@@ -91,6 +91,8 @@ Example:
     grid_size = 100
 
 """
+from dis import dis
+import os
 
 ###############################
 ### MODIFY PARAMETERS BELOW ###
@@ -98,9 +100,9 @@ Example:
 just_anchors = False
 show_partition = True
 
-flow_dir = "/work/alanwang/dataset01/20210621BT/5/raft-flow-raw-1"
+flow_dir = "/work/alanwang/dataset02/20210624BT/0/raft-flow-raw-1"
 
-disp_img_path = "/work/alanwang/dataset01/20210621BT/5/5-001.jpg"
+disp_img_path = "/work/alanwang/dataset02/20210624BT/0/0-001.jpg"
 
 x_splits = ()
 y_splits = ()
@@ -111,6 +113,24 @@ grid_size = 100
 
 ### SHOULD NOT NEED TO MODIFY BELOW ###
 #######################################
+def tBatchTrigger(fpath, imgnum):
+    from dancing_plant.track import run_track_with_defaults
+    flow_dir = os.path.join(fpath, imgnum, 'raft-flow-raw-1')
+    firstImgName = imgnum + '-001.jpg'
+    disp_img_path = os.path.join(fpath, imgnum, firstImgName)
+    print('trace:')
+    print(flow_dir)
+    print(disp_img_path)
+    run_track_with_defaults(
+        disp_img_path,
+        flow_dir,
+        x_splits,
+        y_splits,
+        show_partition,
+        just_anchors,
+        num_trace,
+        grid_size
+    )
 
 
 if __name__ == "__main__":

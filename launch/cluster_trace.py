@@ -38,11 +38,12 @@ Example:
     num_trace = 4
 
 """
+import os
 
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-disp_img_path = "/work/alanwang/dataset01/20210621BT/5/5-001.jpg"
+disp_img_path = "/work/alanwang/dataset02/20210624BT/0/0-001.jpg"
 
 num_cluster = 3
 
@@ -50,7 +51,18 @@ num_trace = 5
 
 ### SHOULD NOT NEED TO MODIFY BELOW ###
 #######################################
+def cBatchTrigger(fpath, imgnum):
+    from dancing_plant.cluster import run_cluster_with_defaults
+    firstImgName = imgnum + '-001.jpg'
+    disp_img_path = os.path.join(fpath, imgnum, firstImgName)
+    print('cluster:')
+    print(disp_img_path)
 
+    run_cluster_with_defaults(
+        disp_img_path,
+        num_cluster,
+        num_trace
+    )
 
 if __name__ == "__main__":
     from dancing_plant.cluster import run_cluster_with_defaults
