@@ -115,7 +115,7 @@ grid_size = 100
 #######################################
 def tBatchTrigger(fpath, imgnum):
     from dancing_plant.track import run_track_with_defaults
-    flow_dir = os.path.join(fpath, imgnum, 'raft-flow-raw-1')
+    flow_dir = os.path.join(fpath, imgnum, 'raft-flow-raw-5')
     firstImgName = imgnum + '-001.jpg'
     disp_img_path = os.path.join(fpath, imgnum, firstImgName)
     print('trace:')
