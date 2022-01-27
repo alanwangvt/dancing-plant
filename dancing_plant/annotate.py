@@ -24,7 +24,7 @@ TRACE_SFX = ""  # can insert suffix after expected format above (leave as empty 
 SAVE_PATH = "/home/lowell/dancing-plant/DPI/05-04-2021/indexed/annotated-dtw-corr"
 
 NUM_PART = 2
-SAMPLE_FREQ = 1
+SAMPLE_FREQ = 5
 CIRC_SIZE = 6
 
 
