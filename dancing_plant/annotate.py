@@ -29,7 +29,7 @@ SAMPLE_FREQ = 5
 CIRC_SIZE = 6
 
 
-def annotate(image_path, trace_path, num_part, sample_freq, circ_size, save_path=None, trace_sfx=""):
+def annotate(image_path, trace_path, num_part, sample_freq: int, circ_size, save_path=None, trace_sfx=""):
     if trace_sfx is None:
         trace_sfx = ""
 
@@ -61,9 +61,9 @@ def annotate(image_path, trace_path, num_part, sample_freq, circ_size, save_path
     
     if not osp.exists(save_path):
         os.makedirs(save_path)
-    print(type(sample_freq))
-    print(sample_freq)
-    print(enumerate(image_paths))
+    # print(type(sample_freq))
+    # print(sample_freq)
+    # print(enumerate(image_paths))
     sampled_image_paths = list(filter(lambda x: x[0] % sample_freq == 0, enumerate(image_paths)))
     sampled_image_paths = [tup[1] for tup in sampled_image_paths]  # remove uncontiguous enumeration
 

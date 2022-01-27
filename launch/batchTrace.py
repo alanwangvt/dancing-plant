@@ -31,7 +31,7 @@ if __name__ == '__main__':
     # print(args)
     if args.path:
         dpath = args.path[0]
-        sample_freq = args.samplefreq[0]
+        sample_freq = int(args.samplefreq[0])
         print(sample_freq)
         if os.path.exists(dpath):
             # print(dpath)
