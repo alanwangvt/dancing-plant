@@ -335,6 +335,7 @@ def save_traces(traces_list, img):
 
 
 def track(args):
+    print(args.image_path)
     img = cv2.imread(args.image_path)
     print("H, W =", img.shape[0], img.shape[1])
 
