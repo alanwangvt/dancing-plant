@@ -47,7 +47,7 @@ if __name__ == '__main__':
                     level2pathname = level2pathlist[len(level2pathlist)-2]
                     # print(level1path)
                     # print(level2pathname) # this is supposed to be a number between 0 and 5
-                    tBatchTrigger(level1path, level2pathname)
+                    tBatchTrigger(level1path, level2pathname, sample_freq)
                     dBatchTrigger(level1path, level2pathname, sample_freq)
                     cBatchTrigger(level1path, level2pathname)  
 
