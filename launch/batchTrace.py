@@ -118,5 +118,5 @@ if __name__ == '__main__':
                     # print(level2pathname) # this is supposed to be a number between 0 and 5
                     tBatchTrigger(level1path, level2pathname)
                     dBatchTrigger(level1path, level2pathname)
-                    cBatchTrigger(level1path, level2pathname)
+                    cBatchTrigger(level1path, level2pathname)                    
                     # print(level1path)
