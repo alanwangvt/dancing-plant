@@ -40,6 +40,7 @@ Example:
 
 """
 import os
+from random import sample
 
 ###############################
 ### MODIFY PARAMETERS BELOW ###
@@ -56,11 +57,12 @@ fps = 20
 
 ### SHOULD NOT NEED TO MODIFY BELOW ###
 #######################################
-def dBatchTrigger(fpath, imgnum):
+def dBatchTrigger(fpath, imgnum, sf):
     from dancing_plant.annotate import run_annotate_with_defaults
     experiment_dir = os.path.join(fpath, imgnum)
     print('draw:')
     print(experiment_dir)
+    sample_freq = sf
 
     run_annotate_with_defaults(
         experiment_dir,

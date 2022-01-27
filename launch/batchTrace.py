@@ -26,10 +26,13 @@ if __name__ == '__main__':
     from cluster_trace import cBatchTrigger
     parser = argparse.ArgumentParser()
     parser.add_argument('path', nargs='+', help="the path to the dataset, e.g., /work/alanwang/dataset01")
+    parser.add_argument('samplefreq', nargs='+', default=1, help='Image sampling frequency used by gen_flow and annotate')
     args = parser.parse_args()
     # print(args)
     if args.path:
         dpath = args.path[0]
+        sample_freq = args.samplefreq[0]
+        print(sample_freq)
         if os.path.exists(dpath):
             # print(dpath)
             level1 = glob.glob(os.path.join(dpath, '*/'))
@@ -46,7 +49,7 @@ if __name__ == '__main__':
                     # print(level2pathname) # this is supposed to be a number between 0 and 5
                     tBatchTrigger(level1path, level2pathname)
                     dBatchTrigger(level1path, level2pathname)
-                    cBatchTrigger(level1path, level2pathname)  
+                    cBatchTrigger(level1path, level2pathname, sample_freq)  
 
                     # mv trace_cache $1
                     # mv tracks $1
