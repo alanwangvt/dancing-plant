@@ -39,26 +39,27 @@ if __name__ == '__main__':
                 # print(level1path)
                 level2 = glob.glob(os.path.join(level1path, '*/'))
                 for j, level2path in enumerate(level2):
-                    # print(level2path)
-                    level2pathname=re.split('\W+',level2path)[2]  # or level1path.replace('\\','')  leve1path.replace('.','')
+                    print(level2path)
+                    level2pathlist=re.split('\W+',level2path)  # or level1path.replace('\\','')  leve1path.replace('.','')
+                    level2pathname = level2pathlist[len(level2pathlist)-2]
                     # print(level1path)
                     # print(level2pathname) # this is supposed to be a number between 0 and 5
-                    tBatchTrigger(level1path, level2pathname)
-                    dBatchTrigger(level1path, level2pathname)
-                    cBatchTrigger(level1path, level2pathname)  
+                    # tBatchTrigger(level1path, level2pathname)
+                    # dBatchTrigger(level1path, level2pathname)
+                    # cBatchTrigger(level1path, level2pathname)  
 
-                    # mv trace_cache $1
-                    # mv tracks $1
-                    # mv clustered $1
-                    # mv annotated $1
-                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "tracks")
-                    dest = osp.join(level1path,level2pathname)
-                    shutil.move(source, dest)   
-                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "trace_cache")
-                    shutil.move(source, dest)            
-                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "clustered")
-                    shutil.move(source, dest)          
-                    source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "annotated")
-                    shutil.move(source, dest)     
+                    # # mv trace_cache $1
+                    # # mv tracks $1
+                    # # mv clustered $1
+                    # # mv annotated $1
+                    # source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "tracks")
+                    # dest = osp.join(level1path,level2pathname)
+                    # shutil.move(source, dest)   
+                    # source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "trace_cache")
+                    # shutil.move(source, dest)            
+                    # source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "clustered")
+                    # shutil.move(source, dest)          
+                    # source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "annotated")
+                    # shutil.move(source, dest)     
                     # print(level1path)
 
