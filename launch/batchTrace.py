@@ -48,8 +48,8 @@ if __name__ == '__main__':
                     # print(level1path)
                     # print(level2pathname) # this is supposed to be a number between 0 and 5
                     tBatchTrigger(level1path, level2pathname)
-                    dBatchTrigger(level1path, level2pathname)
-                    cBatchTrigger(level1path, level2pathname, sample_freq)  
+                    dBatchTrigger(level1path, level2pathname, sample_freq)
+                    cBatchTrigger(level1path, level2pathname)  
 
                     # mv trace_cache $1
                     # mv tracks $1
