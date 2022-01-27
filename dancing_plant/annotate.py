@@ -7,6 +7,7 @@ on the original frames.
 
 import os
 import os.path as osp
+from random import sample
 import cv2
 import glob
 import numpy as np
@@ -60,7 +61,9 @@ def annotate(image_path, trace_path, num_part, sample_freq, circ_size, save_path
     
     if not osp.exists(save_path):
         os.makedirs(save_path)
-
+    print(type(sample_freq))
+    print(sample_freq)
+    print(enumerate(image_paths))
     sampled_image_paths = list(filter(lambda x: x[0] % sample_freq == 0, enumerate(image_paths)))
     sampled_image_paths = [tup[1] for tup in sampled_image_paths]  # remove uncontiguous enumeration
 
