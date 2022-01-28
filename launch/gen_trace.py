@@ -101,9 +101,9 @@ import os
 just_anchors = False
 show_partition = True
 
-flow_dir = "/work/alanwang/dataset02/20210624BT/0/raft-flow-raw-1"
+flow_dir = "/work/alanwang/dataset01/20210623AT/0/raft-flow-raw-1"
 
-disp_img_path = "/work/alanwang/dataset02/20210624BT/0/0-001.jpg"
+disp_img_path = "/work/alanwang/dataset01/20210623AT/0/0-001.jpg"
 
 x_splits = ()
 y_splits = ()
