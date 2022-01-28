@@ -49,6 +49,7 @@ parameters WILL require reloading flow maps:
     flow_dir
     disp_img_path
     grid_size
+    sample_freq
 
 Modifying the following parameters will NOT require
 reloading flow maps and will instead use a cached
