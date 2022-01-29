@@ -57,7 +57,7 @@ if __name__ == '__main__':
                         # mv clustered $1
                         # mv annotated $1
                         source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "tracks")
-                        dest = osp.join(level1path,level2pathname)
+                        dest = osp.join(level1path,level2pathname, f"raft-flow-raw-{sample_freq}")
                         shutil.move(source, dest)   
                         source = osp.join(osp.dirname(osp.dirname(dancing_plant.__file__)), "trace_cache")
                         shutil.move(source, dest)            

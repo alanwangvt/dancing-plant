@@ -1,4 +1,4 @@
-# Usage: python read_trace.py <path to the dataset>    
+# Usage: python read_trace.py <path to the dataset> <img sample freq> 
 # path to the dataset (e.g., d:\temp\dataset01) is the folder that contains subfolders (e.g., 20210101AT), which contains more subfolders (e.g., 0,1,2,3,4,5)
 # the second last subfolder has to be called tracks where X_Trace and Y_Trace files exist
 # It can't deal with multiple traces as of yet
@@ -89,21 +89,24 @@ def saveToCSV(data, csvfilename):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('path', nargs='+', help="the path to the dataset, e.g., /work/alanwang/dataset01/20210621BT")
+    parser.add_argument('path', nargs='+', help="the path to the dataset, e.g., /work/alanwang/dataset01")
+    parser.add_argument('sample_freq', nargs="+", default=1, help='Image sampling frequency used by gen_flow and annotate')
     args = parser.parse_args()
     # print(args)
     if args.path:
+        sample_freq= args.sample_freq
         dpath = args.path[0]
         if osp.exists(dpath):
             # print(dpath)
-            level1 = glob.glob(osp.join(dpath, '**/tracks'), recursive=True)
+            level1 = glob.glob(osp.join(dpath, f'**/raft-flow-raw-{sample_freq}/tracks'), recursive=True)
             print(level1)
             for i, csvfile in enumerate(level1):
                 level2pathlist=re.split('\W+',csvfile)  # or level1path.replace('\\','')  leve1path.replace('.','')
-                datasetname = level2pathlist[len(level2pathlist)-3] + "_" + level2pathlist[len(level2pathlist)-2]
+                datasetname = level2pathlist[len(level2pathlist)-8] + "_" + level2pathlist[len(level2pathlist)-7]
                 print(osp.join(csvfile, 'X_trace.csv'))
+                print(datasetname)
                 xdata = np.loadtxt(osp.join(csvfile, 'X_trace.csv'), dtype=np.int64, delimiter=",")
                 ydata = np.loadtxt(osp.join(csvfile, 'Y_trace.csv'), dtype=np.int64, delimiter=",")   
-                csvfile = level2pathlist[len(level2pathlist)-4] + '.csv'
+                csvfile = level2pathlist[len(level2pathlist)-8] + '.csv'
                 saveToCSV(processData(xdata, ydata, datasetname), csvfile)
-                # print(data)
+                print(csvfile)
