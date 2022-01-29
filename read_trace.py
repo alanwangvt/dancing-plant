@@ -107,6 +107,6 @@ if __name__ == '__main__':
                 print(datasetname)
                 xdata = np.loadtxt(osp.join(csvfile, 'X_trace.csv'), dtype=np.int64, delimiter=",")
                 ydata = np.loadtxt(osp.join(csvfile, 'Y_trace.csv'), dtype=np.int64, delimiter=",")   
-                csvfile = level2pathlist[len(level2pathlist)-8] + '.csv'
+                csvfile = level2pathlist[len(level2pathlist)-8] + f"-f{sample_freq}" + '.csv'
                 saveToCSV(processData(xdata, ydata, datasetname), csvfile)
                 print(csvfile)
