@@ -2,9 +2,10 @@
 This script is used to batch process gen_trace, draw_trace, and cluster trace after flows have been generated.
 Parameter:
 path - The path to the dataset. The path presumably contains two level1 folders, e.g., 20210101AT and 20210101BT. Each level1 folder contains several level2 folders, each of which contains the actual images and a raft-flow folder
+sample freq - Image sampling frequncy
 
 Usage:
-python launch/batchTrace.py /work/alanwang/dataset01
+python launch/batchTrace.py /work/alanwang/dataset01 1
 
 Result:
 Each image folder will contain four subfolders: track, trace_cache, annotated, clustered
