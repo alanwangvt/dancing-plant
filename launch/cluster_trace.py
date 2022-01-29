@@ -43,7 +43,7 @@ import os
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-disp_img_path = "/work/alanwang/dataset02/20210624BT/0/0-001.jpg"
+disp_img_path = "/work/alanwang/dataset01/20210623AT/0/0-001.jpg"
 
 num_cluster = 3
 
