@@ -48,8 +48,8 @@ if __name__ == '__main__':
                     level2pathname = level2pathlist[len(level2pathlist)-2]
                     # print(level1path)
                     # print(level2pathname) # this is supposed to be a number between 0 and 5
-                    print(os.path.join(level1path, level2pathname, 'tracks'))
-                    if not os.path.exists(os.path.join(level1path, level2pathname, 'tracks')):
+                    print(os.path.join(level1path, level2pathname, f"raft-flow-raw-{sample_freq}", 'tracks'))
+                    if not os.path.exists(os.path.join(level1path, level2pathname, f"raft-flow-raw-{sample_freq}", 'tracks')):
                         tBatchTrigger(level1path, level2pathname, sample_freq)
                         dBatchTrigger(level1path, level2pathname, sample_freq)
                         cBatchTrigger(level1path, level2pathname)                  
