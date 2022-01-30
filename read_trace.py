@@ -94,7 +94,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # print(args)
     if args.path:
-        sample_freq= args.sample_freq
+        sample_freq= int(args.sample_freq[0])
         dpath = args.path[0]
         if osp.exists(dpath):
             # print(dpath)
