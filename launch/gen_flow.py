@@ -47,18 +47,6 @@ Example:
 experiment_root = "/projects/deep4cbia/"
 
 collections = [
-    ("dataset01/20210621BT/0", 3),
-    ("dataset01/20210621BT/1", 3),
-    ("dataset01/20210621BT/2", 3),
-    ("dataset01/20210621BT/3", 3),
-    ("dataset01/20210621BT/4", 3),
-    ("dataset01/20210621BT/5", 3),
-    ("dataset01/20210623AT/0", 3),
-    ("dataset01/20210623AT/1", 3),
-    ("dataset01/20210623AT/2", 3),
-    ("dataset01/20210623AT/3", 3),
-    ("dataset01/20210623AT/4", 3),
-    ("dataset01/20210623AT/5", 3),
     ("dataset01/20210621BT/0", 7),
     ("dataset01/20210621BT/1", 7),
     ("dataset01/20210621BT/2", 7),
