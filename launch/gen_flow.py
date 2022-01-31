@@ -44,7 +44,7 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-experiment_root = "/work/alanwang/"
+experiment_root = "/projects/deep4cbia/"
 
 collections = [
     ("dataset01/20210621BT/0", 3),
