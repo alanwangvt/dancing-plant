@@ -36,6 +36,7 @@ def save_flow_raw(path, flo):
     flo = flo[0].permute(1,2,0).cpu().numpy()
 
     prefix = ''.join(path.split('.')[:-1])
+    print(prefix)
     np.save(prefix, flo)
 
 
