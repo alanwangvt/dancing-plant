@@ -44,7 +44,7 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-experiment_root = "/projects/deep4cbia/"
+experiment_root = "/work/alanwang/"
 
 collections = [
     ("dataset01/20210621BT/0", 7),
@@ -85,7 +85,7 @@ collections = [
     ("dataset01/20210623AT/5", 9)       
 ]
 
-save_prefix = "/projects/deep4cbia/"
+save_prefix = "/work/alanwang/"
 
 device = 0
 
