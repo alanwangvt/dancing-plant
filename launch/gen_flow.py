@@ -97,7 +97,7 @@ collections = [
     ("dataset01/20210623AT/5", 9)       
 ]
 
-save_prefix = "/work/alanwang/"
+save_prefix = "/projects/deep4cbia/"
 
 device = 0
 
