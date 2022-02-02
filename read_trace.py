@@ -97,7 +97,7 @@ if __name__ == '__main__':
         sample_freq= int(args.sample_freq[0])
         dpath = args.path[0]
         if osp.exists(dpath):
-            # print(dpath)
+            print(dpath)
             level1 = glob.glob(osp.join(dpath, f'**/raft-flow-raw-{sample_freq}/tracks'), recursive=True)
             print(level1)
             for i, csvfile in enumerate(level1):
