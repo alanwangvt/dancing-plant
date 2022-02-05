@@ -64,7 +64,7 @@ collections = [
     ("dataset07/20210723AT/2", 4),
     ("dataset07/20210723AT/3", 4),
     ("dataset07/20210723AT/4", 4),
-    ("dataset07/20210723AT/5", 4),    
+    ("dataset07/20210723AT/5", 4)   
 ]
 
 save_prefix = "/work/alanwang/"
