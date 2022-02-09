@@ -20,6 +20,7 @@ EXPERIMENTS = [
 
 
 def load_image(imfile):
+    print(imfile)
     img = np.array(Image.open(imfile)).astype(np.uint8)
     img = torch.from_numpy(img).permute(2, 0, 1).float()
     return img[None]
