@@ -88,3 +88,12 @@ After first-time:
 module restore
 unset PYTHONPATH
 source activate pytorch
+
+Alan Wang:
+1. Modify gen_flow.py to specify the work folder and the collections to be processed;
+2. Git push and pull to ~/dancingplant on arc;
+3. sbatch runGenFlow.sh; It will generate a raft-flow-raw folder in each image set;
+4. Wait untill step 3 is completed, in the dancingplant folder run:
+python launch/batchTrace.py, this processes all the traces and generates tracks, trace_cache, clusters, and annotations;
+5. run:
+python read_trace.py , this converts all tracks into a csv file that contains features (x-, y-, z- distances between adjacent time points and max/min/mean distances in each dimension) and a class lable (0-before treatment, 1-immeidately after treatment, 2-after treatment)
