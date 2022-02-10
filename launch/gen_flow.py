@@ -47,12 +47,6 @@ Example:
 experiment_root = "/work/alanwang/"
 
 collections = [
-    ("dataset09/20210804BT/0", 4), 
-    ("dataset09/20210804BT/1", 4),
-    ("dataset09/20210804BT/2", 4),
-    ("dataset09/20210804BT/3", 4),
-    ("dataset09/20210804BT/4", 4),
-    ("dataset09/20210804BT/5", 4),
     ("dataset09/20210805IAT/0", 4),
     ("dataset09/20210805IAT/1", 4),
     ("dataset09/20210805IAT/2", 4),
