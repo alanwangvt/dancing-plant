@@ -47,24 +47,24 @@ Example:
 experiment_root = "/work/alanwang/"
 
 collections = [
-    ("dataset10/20210809BT/0", 4),
-    ("dataset10/20210809BT/1", 4),
-    ("dataset10/20210809BT/2", 4),
-    ("dataset10/20210809BT/3", 4),
-    ("dataset10/20210809BT/4", 4),
-    ("dataset10/20210809BT/5", 4),
-    ("dataset10/20210810IAT/0", 4),
-    ("dataset10/20210810IAT/1", 4),
-    ("dataset10/20210810IAT/2", 4),
-    ("dataset10/20210810IAT/3", 4),
-    ("dataset10/20210810IAT/4", 4),
-    ("dataset10/20210810IAT/5", 4),
-    ("dataset10/20210811AT/0", 4),
-    ("dataset10/20210811AT/1", 4),
-    ("dataset10/20210811AT/2", 4),
-    ("dataset10/20210811AT/3", 4),
-    ("dataset10/20210811AT/4", 4),
-    ("dataset10/20210811AT/5", 4)
+    ("dataset11/20210813BT/0", 4),
+    ("dataset11/20210813BT/1", 4),
+    ("dataset11/20210813BT/2", 4),
+    ("dataset11/20210813BT/3", 4),
+    ("dataset11/20210813BT/4", 4),
+    ("dataset11/20210813BT/5", 4),
+    ("dataset11/20210814IAT/0", 4),
+    ("dataset11/20210814IAT/1", 4),
+    ("dataset11/20210814IAT/2", 4),
+    ("dataset11/20210814IAT/3", 4),
+    ("dataset11/20210814IAT/4", 4),
+    ("dataset11/20210814IAT/5", 4),
+    ("dataset11/20210815AT/0", 4),
+    ("dataset11/20210815AT/1", 4),
+    ("dataset11/20210815AT/2", 4),
+    ("dataset11/20210815AT/3", 4),
+    ("dataset11/20210815AT/4", 4),
+    ("dataset11/20210815AT/5", 4)
 ]
 
 save_prefix = "/work/alanwang/"
