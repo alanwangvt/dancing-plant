@@ -44,30 +44,24 @@ Example:
 ###############################
 ### MODIFY PARAMETERS BELOW ###
 
-experiment_root = "/work/alanwang/"
+experiment_root = "/projects/deep4cbia/"
 
 collections = [
-    ("dataset11/20210813BT/0", 4),
-    ("dataset11/20210813BT/1", 4),
-    ("dataset11/20210813BT/2", 4),
-    ("dataset11/20210813BT/3", 4),
-    ("dataset11/20210813BT/4", 4),
-    ("dataset11/20210813BT/5", 4),
-    ("dataset11/20210814IAT/0", 4),
-    ("dataset11/20210814IAT/1", 4),
-    ("dataset11/20210814IAT/2", 4),
-    ("dataset11/20210814IAT/3", 4),
-    ("dataset11/20210814IAT/4", 4),
-    ("dataset11/20210814IAT/5", 4),
-    ("dataset11/20210815AT/0", 4),
-    ("dataset11/20210815AT/1", 4),
-    ("dataset11/20210815AT/2", 4),
-    ("dataset11/20210815AT/3", 4),
-    ("dataset11/20210815AT/4", 4),
-    ("dataset11/20210815AT/5", 4)
+    ("redlight/0", 4),
+    ("redlight/1", 4),
+    ("redlight/4", 4),
+    ("redlight/5", 4),
+    ("greenlight/0", 4),
+    ("greenlight/1", 4),
+    ("greenlight/4", 4),
+    ("greenlight/5", 4),
+    ("bluelight/0", 4),
+    ("bluelight/1", 4),
+    ("bluelight/4", 4),
+    ("bluelight/5", 4)
 ]
 
-save_prefix = "/work/alanwang/"
+save_prefix = "/projects/deep4cbia/"
 
 device = 0
 
