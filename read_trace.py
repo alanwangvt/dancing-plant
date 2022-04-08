@@ -25,12 +25,12 @@ def processData(xv, yv, dataname):
         maxz=0.0
         if j==0:
             columnheaders.append('class')
-        if dataname.find('B')>=0:
+        if dataname.find('red')>=0:
             row.append('0')
-        elif dataname.find('IA')>=0:
+        elif dataname.find('green')>=0:
             row.append('1')
-        elif dataname.find('A')>=0:
-            row.append(2)
+        elif dataname.find('blue')>=0:
+            row.append('2')
         else:
             row.append(dataname)
         for i in range(1, dimens[1]):
